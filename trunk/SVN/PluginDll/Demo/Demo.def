@@ -1,0 +1,24 @@
+; Demo.def : 声明 DLL 的模块参数。
+
+LIBRARY      "Demo"
+
+EXPORTS
+    ; 此处可以是显式导出
+	GetPlugInVersion
+	
+	SetCallBackFun
+	SetCallBackFunW
+
+	GetInfo
+	GetInfoW
+
+	CreateBash
+	DestroyBash
+
+	SetMessage
+	SetMessageW
+	
+	SetSender
+	SetSenderW
+	
+	run
