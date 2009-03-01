@@ -1,7 +1,10 @@
 Type=Exe
 Form=chnTest.frm
 Reference=*\G{00020430-0000-0000-C000-000000000046}#2.0#0#C:\WINDOWS\system32\stdole2.tlb#OLE Automation
+Object={EDE925E9-F18B-4316-8AB3-F5D6A6241846}#43.0#0; Channel.ocx
+IconForm="Form1"
 Startup="Form1"
+ExeName32="chnTest.exe"
 Command32=""
 Name="¹¤³Ì1"
 HelpContextID="0"
