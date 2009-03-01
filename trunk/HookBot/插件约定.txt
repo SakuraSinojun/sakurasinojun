@@ -1,0 +1,49 @@
+/*
+EXE中给出回调
+*/
+
+/*
+DLL中导出函数:
+(Unicode和Ansi两个版本.)
+*/
+
+
+//这个函数用以返回DLL版本:Unicode或Ansi
+#define VERSION_UNICODE 0
+#define VERSION_ANSI 1
+int GetPlugInVersion();
+
+//这个函数用以设定回调信息。
+typedef void (WINAPI *PFNCALLBACK)(HWND,char *);
+void SetCallBackFun(PFNCALLBACK);
+typedef void (WINAPI *PFNCALLBACKW)(HWND,wchar_t *);
+void SetCallBackFunW(PFNCALLBACKW);
+
+
+//返回插件描述
+char * GetInfo();
+wchar_t * GetInfoW();
+
+//Bash界面。左下角常显小窗。简单设置可以放在这里。
+void CreateBash(HWND,RECT);
+void DestroyBash();
+
+//最后一条消息，用于处理
+void SetMessage(char *);
+void SetMessageW(wchar_t *);
+
+//发送者
+void SetSender(char *);
+void SetSenderW(wchar_t *);
+
+//主处理过程
+
+void run(HWND);
+
+
+
+
+
+
+
+
