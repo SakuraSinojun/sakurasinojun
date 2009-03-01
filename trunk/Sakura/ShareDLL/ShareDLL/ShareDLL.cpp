@@ -79,6 +79,7 @@ int _stdcall ReadSharedComm(int CommPort,char * data)
 {
 
 	int i;
+	int j ;
 	for(i=1023;i>=0;i--)
 	{
 		if(COM[CommPort][i]!=0)break;
@@ -86,7 +87,7 @@ int _stdcall ReadSharedComm(int CommPort,char * data)
 
 	if(i==-1)return 0;
 
-	for(int j=0;j<=i;j++)
+	for(j=0;j<=i;j++)
 	{
 		*(data+j)=COM[CommPort][j];
 	}
