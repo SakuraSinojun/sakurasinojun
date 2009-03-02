@@ -198,6 +198,11 @@ Begin VB.Form Form1
       TabIndex        =   0
       Top             =   60
       Width           =   13410
+      Begin VB.Timer Timer2 
+         Interval        =   10
+         Left            =   7890
+         Top             =   420
+      End
       Begin VB.PictureBox Picture3 
          Appearance      =   0  'Flat
          AutoRedraw      =   -1  'True
@@ -216,8 +221,8 @@ Begin VB.Form Form1
       End
       Begin VB.Timer Timer1 
          Interval        =   3000
-         Left            =   9525
-         Top             =   180
+         Left            =   7065
+         Top             =   420
       End
       Begin VB.Timer TimerTimeOut 
          Interval        =   1000
@@ -343,6 +348,61 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
+
+
+
+'用到的API.及常数.
+
+Private Type SECURITY_ATTRIBUTES
+        nLength As Long
+        lpSecurityDescriptor As Long
+        bInheritHandle As Long
+End Type
+
+Private Declare Function CreateFileMapping Lib "kernel32" Alias "CreateFileMappingA" (ByVal hFile As Long, lpFileMappigAttributes As SECURITY_ATTRIBUTES, ByVal flProtect As Long, ByVal dwMaximumSizeHigh As Long, ByVal dwMaximumSizeLow As Long, ByVal lpName As String) As Long
+Private Declare Function OpenFileMapping Lib "kernel32" Alias "OpenFileMappingA" (ByVal dwDesiredAccess As Long, ByVal bInheritHandle As Long, ByVal lpName As String) As Long
+Private Declare Function MapViewOfFile Lib "kernel32" (ByVal hFileMappingObject As Long, ByVal dwDesiredAccess As Long, ByVal dwFileOffsetHigh As Long, ByVal dwFileOffsetLow As Long, ByVal dwNumberOfBytesToMap As Long) As Long
+Private Declare Function UnmapViewOfFile Lib "kernel32" (lpBaseAddress As Any) As Long
+Private Declare Function GetLastError Lib "kernel32" () As Long
+Private Declare Function CloseHandle Lib "kernel32" (ByVal hObject As Long) As Long
+Private Declare Function lstrcpyL2S Lib "kernel32" Alias "lstrcpyA" (ByVal lpString1 As String, ByVal lpString2 As Long) As Long
+Private Declare Function lstrcpyS2L Lib "kernel32" Alias "lstrcpyA" (ByVal lpString1 As Long, ByVal lpString2 As String) As Long
+Private Declare Function lstrcpy Lib "kernel32" Alias "lstrcpyA" (ByVal lpString1 As String, ByVal lpString2 As String) As Long
+Private Declare Function lstrlen Lib "kernel32" Alias "lstrlenA" (ByVal lpString As String) As Long
+
+Private Const PAGE_NOACCESS = &H1
+Private Const PAGE_READONLY = &H2
+Private Const PAGE_READWRITE = &H4
+Private Const PAGE_WRITECOPY = &H8
+Private Const PAGE_EXECUTE = &H10
+Private Const PAGE_EXECUTE_READ = &H20
+Private Const PAGE_EXECUTE_READWRITE = &H40
+Private Const PAGE_EXECUTE_WRITECOPY = &H80
+Private Const PAGE_GUARD = &H100
+Private Const PAGE_NOCACHE = &H200
+Private Const PAGE_WRITECOMBINE = &H400
+Private Const STANDARD_RIGHTS_REQUIRED = &HF0000
+
+Private Const SECTION_EXTEND_SIZE = &H10
+Private Const SECTION_MAP_EXECUTE = &H8
+Private Const SECTION_MAP_READ = &H4
+Private Const SECTION_MAP_WRITE = &H2
+Private Const SECTION_QUERY = &H1
+Private Const SECTION_ALL_ACCESS = STANDARD_RIGHTS_REQUIRED Or SECTION_QUERY Or SECTION_MAP_WRITE Or SECTION_MAP_READ Or SECTION_MAP_EXECUTE Or SECTION_EXTEND_SIZE
+
+Private Const FILE_MAP_ALL_ACCESS = SECTION_ALL_ACCESS
+Private Const FILE_MAP_COPY = SECTION_QUERY
+Private Const FILE_MAP_READ = SECTION_MAP_READ
+Private Const FILE_MAP_WRITE = SECTION_MAP_WRITE
+
+
+
+'GUID
+Private Const m_MapFile = "{A2EE168A-E017-478d-9630-721F32B557B0}"
+
+
+'自定义格式之类
+
 Private Const MAXCLIENT = 18
 
 Private Type Client
@@ -360,15 +420,15 @@ End Type
 
 Private m_bwskBroadCastInit As Boolean
 Private m_bIsSTesting As Boolean
-
-'Private m_RemoteClient As New clsRemoteClient
-
-
 Private m_IndexFromPort(255) As Integer
+Private m_hMappingFilePtr(MAXCLIENT) As Long
+Private m_hMappingRFilePtr(MAXCLIENT) As Long
 
 Dim m_Clients(MAXCLIENT) As Client
-
 Dim m_cIndex As String
+
+
+
 
 
 Private Sub Form_Load()
@@ -379,6 +439,11 @@ Dim cnt As Long
 Dim strkm As String
 Dim strkv As String
 Dim lenData As Long, typeData As Long
+Dim Security As SECURITY_ATTRIBUTES
+Dim MapHandle As Long
+Dim RMapHandle As Long
+
+Dim path As String
 
 
 
@@ -394,6 +459,13 @@ Dim lenData As Long, typeData As Long
             .RemotePort = 7500
             .LocalPort = "7500"
             .Bind
+      End With
+      
+      With wskXChange
+        .Close
+        .Protocol = sckUDPProtocol
+        .LocalPort = 7600
+        .Bind
       End With
       
       
@@ -452,54 +524,58 @@ Dim lenData As Long, typeData As Long
                   .Picture = Nothing
             End With
       Next i
-      
-      
 
-
-    '整理右键菜单
-
-    '        i = 1
+        
+        With Security
+            .bInheritHandle = 0
+            .lpSecurityDescriptor = 0
+            .nLength = Len(Security)
+        End With
+        
+        
+        For i = 1 To MAXCLIENT
+            Load mnNComm(i)
+            Load mnSComm(i)
+            mnNComm(i).Caption = "信道 " & i
+            mnSComm(i).Caption = "信道 " & i
+            mnNComm(i).Visible = True
+            mnSComm(i).Visible = True
             
-    '        RegOpenKey HKEY_LOCAL_MACHINE, "Hardware\DeviceMap\SerialComm", hKey
-    '        strkm = String(255, Chr(0))
-    '        Do While RegEnumValue(hKey, cnt, strkm, 255, 0, ByVal 0&, ByVal 0&, ByVal 0&) = 0
-    '            If RegQueryValueEx(hKey, strkm, 0, typeData, ByVal vbNullString, lenData) = 0 Then
-    '                strkv = String(lenData, Chr(0))
-    '                RegQueryValueEx hKey, strkm, 0, typeData, ByVal strkv, lenData
-    '                If strkv <> "" Then
-    '                          Load mnNComm(i)
-    '                          Load mnSComm(i)
-    '                          mnNComm(i).Caption = Trim(strkv)
-    '                          mnSComm(i).Caption = Trim(strkv)
-    '                          mnNComm(i).Visible = True
-    '                          mnSComm(i).Visible = True
-                              
-    '                          Load MSComm1(i)
-    '                          MSComm1(i).CommPort = Val(Mid(Trim(strkv), 4))
-                              
-    '                          m_IndexFromPort(Val(Mid(Trim(strkv), 4))) = i
-                              
-     '                         m_SerialPortCount = i
-     '                         i = i + 1
-     '               End If
-     '           End If
-     '           cnt = cnt + 1
-     '       Loop
+            
+            '发送信道。标识"S"
+            '但实际上本程序从这个信道读取数据
+            path = m_MapFile & "S" & Trim(Str(i))
+            MapHandle = OpenFileMapping(FILE_MAP_ALL_ACCESS, PAGE_READWRITE, path)
+            If MapHandle = 0 Then
+                MapHandle = CreateFileMapping(&HFFFFFFFF, Security, PAGE_READWRITE, 0, 1024, path)
+                If MapHandle = 0 Then
+                    MsgBox "共享文件错误。。可能需要重启计算机。"
+                    End
+                End If
+            End If
+            m_hMappingFilePtr(i) = MapViewOfFile(MapHandle, FILE_MAP_ALL_ACCESS, 0, 0, 0)
+            'CloseHandle MapHandle
+            
+            '标识为"R"的接收信道
+            '从网络接收到的数据将被写入这个信道
+            path = m_MapFile & "R" & Trim(Str(i))
+            RMapHandle = OpenFileMapping(FILE_MAP_ALL_ACCESS, PAGE_READWRITE, path)
+            If RMapHandle = 0 Then
+                RMapHandle = CreateFileMapping(&HFFFFFFFF, Security, PAGE_READWRITE, 0, 1024, path)
+                If RMapHandle = 0 Then
+                    MsgBox "共享文件错误。。可能需要重启计算机。"
+                    End
+                End If
+            End If
+            m_hMappingRFilePtr(i) = MapViewOfFile(RMapHandle, FILE_MAP_ALL_ACCESS, 0, 0, 0)
+            'CloseHandle RMapHandle
+            
+            
+        Next i
 
-
-    For i = 1 To MAXCLIENT
-        Load mnNComm(i)
-        Load mnSComm(i)
-        mnNComm(i).Caption = "信道 " & i
-        mnSComm(i).Caption = "信道 " & i
-        mnNComm(i).Visible = True
-        mnSComm(i).Visible = True
-    Next i
-    
-    Me.Show
-    
-    Me.Width = 9450
-    
+        Me.Show
+        Me.Width = 9450
+        
 
 End Sub
 
@@ -621,6 +697,14 @@ Dim i As Integer
       If 2 = Button Then
             m_cIndex = i
             
+            For i = 1 To MAXCLIENT
+                  mnNComm(i).Checked = False
+                  mnSComm(i).Checked = False
+            Next i
+            
+            mnNComm(m_Clients(m_cIndex).CommFromNet).Checked = True
+            mnSComm(m_Clients(m_cIndex).CommToNet).Checked = True
+            
             Me.PopupMenu mnConnect
       
       End If
@@ -681,6 +765,38 @@ Private Sub Timer1_Timer()
       
       wskBroadCast.SendData "IAMASERVER"
       
+      
+End Sub
+
+Private Sub Timer2_Timer()
+    
+    Dim szCont As String * 1024
+    Dim i As Integer
+    Dim j As Integer
+    
+    
+      For i = 1 To MAXCLIENT
+            szCont = String(1024, " ")
+            lstrcpyL2S ByVal szCont, m_hMappingFilePtr(i)
+            szCont = Trim(szCont)
+            j = lstrlen(szCont)
+            szCont = Left(szCont, j)
+            If j >= 1 Then
+                  For j = 1 To MAXCLIENT
+                        If m_Clients(j).IP <> "" Then
+                              If m_Clients(j).CommToNet = i And m_Clients(j).bConnected = True Then
+                                  wskXChange.RemoteHost = m_Clients(j).IP
+                                  wskXChange.RemotePort = 7600
+                                  wskXChange.SendData szCont
+                              End If
+                        End If
+                  Next j
+            lstrcpyS2L m_hMappingFilePtr(i), ""
+            End If
+      Next i
+
+wher:
+      Err.Clear
       
 End Sub
 
@@ -797,6 +913,7 @@ Private Sub wskControl_DataArrival(ByVal bytesTotal As Long)
        '对方返回令牌
        
             i = CheckClient(wskControl.RemoteHostIP)
+            
             If m_Clients(i).Token = cPacket.GetData Then
             Else
                   m_Clients(i).Token = cPacket.GetData
@@ -937,4 +1054,24 @@ End Function
 
 
 
+
+Private Sub wskXChange_DataArrival(ByVal bytesTotal As Long)
+      
+      Dim msg As String * 1024
+      Dim i As Integer
+      
+      msg = String(1024, " ")
+      wskXChange.GetData msg
+      i = CheckClient(wskXChange.RemoteHostIP)
+      
+      DEBUG_SHOWMESSAGE "收到来自" & wskXChange.RemoteHostIP & "的数据:" & vbCrLf & msg
+      
+      If i = 0 Then Exit Sub
+      
+      msg = msg & ""
+      
+      lstrcpyS2L m_hMappingRFilePtr(m_Clients(i).CommFromNet), ByVal msg
+      
+
+End Sub
 

@@ -1,2 +1,2 @@
-copy ..\ShareDLL\Share\Release\Share.dll Share.dll
+copy ..\ShareDLL\ShareDll\Release\ShareDll.dll ShareDll.dll
 pause

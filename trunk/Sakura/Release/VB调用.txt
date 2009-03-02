@@ -1,2 +1,0 @@
-Private Declare Function WriteSharedComm Lib "ShareDLL.dll" (ByVal CommPort As Integer, ByVal data As String, ByVal length As Integer) As Integer
-Private Declare Function ReadSharedComm Lib "ShareDLL.dll" (ByVal CommPort As Integer, ByVal data As String) As Integer

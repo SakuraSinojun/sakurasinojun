@@ -1,52 +1,89 @@
 VERSION 5.00
-Object = "{EDE925E9-F18B-4316-8AB3-F5D6A6241846}#35.0#0"; "Channel.ocx"
+Object = "{F9043C88-F6F2-101A-A3C9-08002B2F49FB}#1.2#0"; "Comdlg32.ocx"
 Begin VB.Form Form1 
-   Caption         =   "Form1"
-   ClientHeight    =   6270
+   Appearance      =   0  'Flat
+   BackColor       =   &H00D67563&
+   Caption         =   "信道维护"
+   ClientHeight    =   5730
    ClientLeft      =   60
    ClientTop       =   450
-   ClientWidth     =   8940
+   ClientWidth     =   12615
    LinkTopic       =   "Form1"
-   ScaleHeight     =   6270
-   ScaleWidth      =   8940
+   LockControls    =   -1  'True
+   MaxButton       =   0   'False
+   ScaleHeight     =   5730
+   ScaleWidth      =   12615
    StartUpPosition =   3  '窗口缺省
-   Begin VB.TextBox Text2 
-      Height          =   810
-      Left            =   1605
+   Begin VB.CommandButton btnCancel 
+      Appearance      =   0  'Flat
+      BackColor       =   &H00D67563&
+      Caption         =   "清除"
+      Enabled         =   0   'False
+      Height          =   405
+      Left            =   11460
       TabIndex        =   3
-      Text            =   "Text2"
-      Top             =   2655
-      Width           =   6630
+      Top             =   5250
+      Width           =   1080
    End
-   Begin 工程2.Channel Channel1 
-      Left            =   990
-      Top             =   1005
-      _ExtentX        =   1852
-      _ExtentY        =   1667
+   Begin MSComDlg.CommonDialog CD 
+      Left            =   8565
+      Top             =   5175
+      _ExtentX        =   847
+      _ExtentY        =   847
+      _Version        =   393216
    End
-   Begin VB.CommandButton Command2 
-      Caption         =   "Command2"
-      Height          =   1680
-      Left            =   1320
-      TabIndex        =   2
-      Top             =   3360
-      Width           =   7005
-   End
-   Begin VB.CommandButton Command1 
-      Caption         =   "Command1"
-      Height          =   480
-      Left            =   2775
+   Begin VB.ListBox List1 
+      Appearance      =   0  'Flat
+      BackColor       =   &H00D67563&
+      BeginProperty Font 
+         Name            =   "Comic Sans MS"
+         Size            =   10.5
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00FFFFFF&
+      Height          =   5160
+      ItemData        =   "chnTest.frx":0000
+      Left            =   0
+      List            =   "chnTest.frx":0037
       TabIndex        =   1
-      Top             =   1770
-      Width           =   5145
+      Top             =   30
+      Width           =   12525
    End
    Begin VB.TextBox Text1 
-      Height          =   885
-      Left            =   2745
+      Appearance      =   0  'Flat
+      BackColor       =   &H00D67563&
+      BeginProperty Font 
+         Name            =   "Comic Sans MS"
+         Size            =   10.5
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00FFFFFF&
+      Height          =   405
+      Left            =   15
+      Locked          =   -1  'True
       TabIndex        =   0
       Text            =   "Text1"
-      Top             =   660
-      Width           =   4365
+      Top             =   5235
+      Width           =   10290
+   End
+   Begin VB.CommandButton btnBrowser 
+      Appearance      =   0  'Flat
+      BackColor       =   &H00D67563&
+      Caption         =   "浏览"
+      Enabled         =   0   'False
+      Height          =   405
+      Left            =   10350
+      TabIndex        =   2
+      Top             =   5250
+      Width           =   1080
    End
 End
 Attribute VB_Name = "Form1"
@@ -55,32 +92,85 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
-'Private Declare Function WriteSharedComm Lib "ShareDLL.dll" (ByVal CommPort As Integer, ByVal data As String, ByVal length As Integer) As Integer
-'Private Declare Function ReadSharedComm Lib "ShareDLL.dll" (ByVal CommPort As Integer, ByVal data As String) As Integer
 
-'Private Declare Function WriteChannel Lib "Share.dll" (ByVal Channel As Integer, ByVal data As String, ByVal length As Integer) As Integer
-'Private Declare Function ReadChannel Lib "Share.dll" (ByVal Channel As Integer, ByVal data As String) As Integer
+Private pIniFile As New clsTIniFile
 
 
-Private Sub Channel1_DataArrival(data As String)
+
+Private Sub btnBrowser_Click()
+On Error GoTo wher
+
+Dim path As String
+Dim i As Integer
 
 
-Text2.Text = data
+CD.CancelError = True
+CD.Filter = "*.exe|*.exe"
+
+CD.ShowOpen
+path = CD.FileName
+Text1.Text = path
+
+i = List1.ListIndex + 1
+pIniFile.WriteString "List", Format(i, "信道00"), path
+List1.List(List1.ListIndex) = Format(List1.ListIndex + 1, "信道00") & "    " & path
+
+
+Exit Sub
+wher:
+    Err.Clear
+End Sub
+
+Private Sub btnCancel_Click()
+Dim i As Integer
+
+i = List1.ListIndex + 1
+
+pIniFile.WriteString "List", Format(i, "信道00"), ""
+
+List1.List(i - 1) = Format(i, "信道00")
 
 End Sub
 
-Private Sub Command1_Click()
+Private Sub Form_Load()
 
-
-Channel1.SendDataToChannel Text1.Text
-
-End Sub
-
-Private Sub Command2_Click()
-
+Dim i As Integer
+Dim path As String
 Dim msg As String
 
 
+pIniFile.Initialize "channellist.ini"
+
+path = App.path
+List1.Clear
+
+If Right(path, 1) <> "\" Then path = path & "\"
+path = path & App.EXEName & ".exe"
+Text1.Text = path
+
+
+For i = 1 To 18
+    msg = pIniFile.ReadString("List", Format(i, "信道00"), "")
+    If Dir(Trim(msg)) = "" Then
+        pIniFile.WriteString "List", Format(i, "信道00"), ""
+        msg = ""
+    End If
+    List1.AddItem Format(i, "信道00") & "    " & msg
+Next i
+
+
 End Sub
 
+Private Sub List1_Click()
 
+btnBrowser.Enabled = True
+btnCancel.Enabled = True
+Text1.Text = Trim(Mid(List1.Text, 5))
+
+End Sub
+
+Private Sub List1_DblClick()
+
+Call btnBrowser_Click
+
+End Sub
