@@ -1,0 +1,58 @@
+/*
+EXE中给出回调
+*/
+
+/*
+DLL中导出函数:
+(Unicode和Ansi两个版本.)
+*/
+
+
+//这个函数用以返回DLL版本:Unicode或Ansi
+//这里有点bug.
+//只能用Uni版的DLL
+//只实现Uni版的函数就可以了
+
+#define VERSION_UNICODE 0
+#define VERSION_ANSI 1
+int GetPlugInVersion();
+
+//这个函数用以设定回调信息。
+//前两个参数直接按顺序列从run返回
+//若char*不为空字串，则直接将char * 所有的内容发送至QQ输入窗
+typedef void (WINAPI *PFNCALLBACK)(HWND,HWND,char *);
+void SetCallBackFun(PFNCALLBACK);
+typedef void (WINAPI *PFNCALLBACKW)(HWND,HWND,wchar_t *);
+void SetCallBackFunW(PFNCALLBACKW);
+
+
+//返回插件描述
+//插件初始化后除DLLMAIN外调用的第一个函数，一般初始化代码扔这里也可
+char * GetInfo();
+wchar_t * GetInfoW();
+
+//Bash界面。左下角常显小窗。简单设置可以放在这里。
+//HWND是将要设定的交窗口句柄
+//RECT是其初始位置信息
+void CreateBash(HWND,RECT);
+void DestroyBash();
+
+//QQ收到的最后一条消息
+void SetMessage(char *);
+void SetMessageW(wchar_t *);
+
+//发送者
+//名字+(QQ号)或者 "名字+<E-mail>"格式，未做处理
+void SetSender(char *);
+void SetSenderW(wchar_t *);
+
+//在设定Message和Sender后调用这个函数
+void run(HWND);
+
+
+
+
+
+
+
+
