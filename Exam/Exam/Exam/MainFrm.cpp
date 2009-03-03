@@ -99,8 +99,8 @@ void CMainFrame::OnGetMinMaxInfo(MINMAXINFO* lpMMI)
 {
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
 
-	lpMMI->ptMinTrackSize .x =640;
-	lpMMI->ptMinTrackSize .y=480;
+	lpMMI->ptMinTrackSize .x =800;
+	lpMMI->ptMinTrackSize .y=600;
 
 	CFrameWnd::OnGetMinMaxInfo(lpMMI);
 
