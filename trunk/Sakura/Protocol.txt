@@ -6,16 +6,7 @@ WinSock用四个:
 
 wskBroadCast	UDP		广播数据				RP:7000		LP:7000
 wskControl		UDP		控制S/C间行为			RP:7500		LP:7500
-wskSpeedTest[]	TCP		TCP测速					RP:7600		LP:7600
 wskXChange[]	TCP		数据交换				RP:7700		LP:7700
-
-
-ClientGUI:
-
-wskBroadCast	UDP		RP:7000		LP:7001
-wskControl		UDP		LP:7500		LP:7501
-wskSpeedTest	TCP		RP:7600		LP:7601
-wskXChange[]	TCP		RP:7700		LP:7701
 
 
 
@@ -52,21 +43,7 @@ Client:		wskControl			"IAMALIVE"
 Server:		wskControl			"OKYOUAREALIVE"
 
 
-TCP测速:
 发起方构造奇数包1~9，接收方构造偶数包2~10。
-
-
-TCP数据交换:
-
-WRITESPORT:{data}
-READSPORT:{data}
-
-
-
-
-
-
-
 
 
 
