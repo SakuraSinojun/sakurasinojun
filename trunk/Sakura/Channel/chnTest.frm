@@ -32,7 +32,7 @@ Begin VB.Form Form1
       _ExtentY        =   847
       _Version        =   393216
    End
-   Begin VB.ListBox List1 
+   Begin VB.ListBox s 
       Appearance      =   0  'Flat
       BackColor       =   &H00D67563&
       BeginProperty Font 
