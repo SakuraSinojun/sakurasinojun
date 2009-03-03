@@ -1,12 +1,21 @@
 // ExamView.h : CExamView 类的接口
 //
 
-
 #pragma once
+
+
+#include "NumEdit.h"
+
+
 
 
 #define IDC_BUTTONSTARTEXAM 201
 #define IDC_BUTTONSETUPEXAM 202
+#define IDC_EDITQCOUNT 203
+#define IDC_EDITNAME 204
+#define IDC_EDITID 205
+
+
 
 
 class CExamView : public CView
@@ -48,7 +57,14 @@ public:
 	CButton * m_ButtonStart;
 	CButton * m_ButtonSetup;
 
-	enum STATUS {STATUS_ZERO,STATUS_PREEXAM,STATUS_STARTINGEXAM,STATUS_EXAMING};
+	CNumEdit * m_EditQCount;
+	CEdit * m_EditName;
+	CEdit * m_EditID;
+
+
+	int m_iQuestionCount;
+
+	enum STATUS {STATUS_ZERO,STATUS_PREEXAM,STATUS_SETUP,STATUS_STARTINGEXAM,STATUS_EXAMING};
 	STATUS m_ExamStatus;
 
 	void StartExam();
