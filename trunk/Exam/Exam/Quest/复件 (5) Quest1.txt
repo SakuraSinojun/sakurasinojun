@@ -1,0 +1,33 @@
+{Question}
+You are writing a method to compress an array of bytes. The bytes to be compressed are passed to the method in a parameter named document. You need to compress the contents of the incoming parameter. Which code segment should you see?
+
+A.	MemoryStream^ inStream = gcnew MemoryStream(document);
+	GZipStream^ zipStream = gcnew GZipStream(inStream, CompressionMode::Compress);
+	array<Byte>^ result=gcnew array<Byte>(document->Length);
+	zipStream->Write(result,0,result->Length);
+	return result;
+
+B.	MemoryStream^ stream = gcnew MemoryStream(document);
+	GZipStream^ zipStream = gcnew GZipStream(stream,CompressionMode::Compress);
+	zipStream->Write(document,0,document->Length);
+	zipStream->Close();
+	return stream->ToArray();
+	
+C.	MemoryStream^ outStream = gcnew MemoryStream();
+	GZipStream^ zipStream = gcnew GZipStream(outStream,CompressionMode::Compress);
+	zipStream->Write(document,0,document->Length);
+	zipStream->Close();
+	return outStream->ToArray();
+	
+D.	MemoryStream^ inStream = gcnew MemoryStream(document);
+	GZipStream^ zipStream = gcnew GZipStream(inSTream,CompressionMode::Compress);
+	MemoryStream^ outStream=gcnew MemoryStream();
+	int b;
+	while((b=zipStream->ReadByte())!=-1)
+	{
+		outStream->WriteByte((Byte)b);
+	}
+	return outStream->ToArray();
+	
+{Answer}
+C
