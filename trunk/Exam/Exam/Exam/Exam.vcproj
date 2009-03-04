@@ -206,6 +206,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Question.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\stdafx.cpp"
 				>
 				<FileConfiguration
@@ -249,6 +253,10 @@
 			</File>
 			<File
 				RelativePath=".\NumEdit.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Question.h"
 				>
 			</File>
 			<File
