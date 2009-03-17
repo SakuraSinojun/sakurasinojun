@@ -1,0 +1,9 @@
+E:\中转，或者帮别人搞的东西\kin\毕业设计\trunk\IPCamera\VB\VBCamera\工程1.NET\bin\工程1.exe
+E:\中转，或者帮别人搞的东西\kin\毕业设计\trunk\IPCamera\VB\VBCamera\工程1.NET\bin\工程1.pdb
+E:\中转，或者帮别人搞的东西\kin\毕业设计\trunk\IPCamera\VB\VBCamera\工程1.NET\bin\工程1.xml
+E:\中转，或者帮别人搞的东西\kin\毕业设计\trunk\IPCamera\VB\VBCamera\工程1.NET\obj\Debug\ResolveAssemblyReference.cache
+E:\中转，或者帮别人搞的东西\kin\毕业设计\trunk\IPCamera\VB\VBCamera\工程1.NET\obj\Debug\工程1.Form1.resources
+E:\中转，或者帮别人搞的东西\kin\毕业设计\trunk\IPCamera\VB\VBCamera\工程1.NET\obj\Debug\VBCamera.vbproj.GenerateResource.Cache
+E:\中转，或者帮别人搞的东西\kin\毕业设计\trunk\IPCamera\VB\VBCamera\工程1.NET\obj\Debug\工程1.exe
+E:\中转，或者帮别人搞的东西\kin\毕业设计\trunk\IPCamera\VB\VBCamera\工程1.NET\obj\Debug\工程1.xml
+E:\中转，或者帮别人搞的东西\kin\毕业设计\trunk\IPCamera\VB\VBCamera\工程1.NET\obj\Debug\工程1.pdb
