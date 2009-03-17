@@ -220,7 +220,7 @@ DWORD WINAPI CWinBot::StartRound(LPVOID lpParam)
 
 DWORD WINAPI CWinBot::StartDiceBot(LPVOID lpParam)
 {
-	CString cmd=CString((wchar_t *)lpParam);
+	//CString cmd=CString((wchar_t *)lpParam);
 	CString tmp;
 
 
@@ -343,10 +343,6 @@ DWORD WINAPI CWinBot::StartDiceBot(LPVOID lpParam)
 			LastMsg.ReleaseBuffer ();
 
 			::ReleaseMutex (m_hMutex);
-
-
-
-
 
 			pPlug->run(hInputWin,hSendButton);
 
