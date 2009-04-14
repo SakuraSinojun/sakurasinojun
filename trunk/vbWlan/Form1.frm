@@ -74,10 +74,14 @@ Private Enum WLAN_CONNECTION_MODE
     wlan_connection_mode_invalid
 End Enum
 
+
+
+
 Private Type DOT11_SSID
-    uSSIDLength As Date                  '64bits
+    uSSIDLength As Long
     ucSSID(31) As Byte
 End Type
+
 
 Private Type NDIS_OBJECT_HEADER
     Type As Byte
@@ -85,10 +89,12 @@ Private Type NDIS_OBJECT_HEADER
     Size As Integer
 End Type
 
+
+
 Private Type DOT11_BSSID_LIST
     Header As NDIS_OBJECT_HEADER
-    uNumOfEntries As Date               '64bits
-    uTotalNumOfEntries As Date          '64bits
+    uNumOfEntries As Long
+    uTotalNumOfEntries As Long
     BSSIDs(5) As Byte                   'DOT11_MAC_ADDRESS  BSSIDs[1];
                                         'The DOT11_MAC_ADDRESS types are used to define an IEEE media access control (MAC) address.
                                     
@@ -97,17 +103,21 @@ Private Type DOT11_BSSID_LIST
                                         'typedef DOT11_MAC_ADDRESS* PDOT11_MAC_ADDRESS;
 End Type
 
+
+
+
 Private Enum DOT11_BSS_TYPE
         dot11_BSS_type_infrastructure = 1
         dot11_BSS_type_independent = 2
         dot11_BSS_type_any = 3
 End Enum
 
+
 Private Type WLAN_CONNECTION_PARAMETERS
     wlanConnectionMode As WLAN_CONNECTION_MODE
     strProfile As Long
-    pDot11Ssid As DOT11_SSID
-    pDesiredBssidList As DOT11_BSSID_LIST
+    pDot11Ssid As Long                      'pointer to DOT11_SSID
+    pDesiredBssidList As Long               'pointer to DOT11_BSSID_LIST
     dot11BssType As DOT11_BSS_TYPE
     dwFlags As Long
 End Type
@@ -115,17 +125,20 @@ End Type
          'WlanConnect
 Private Declare Function WlanConnect Lib "Wlanapi.dll" ( _
     ByVal hClientHandle As Long, _
-    ByVal pInterfaceGuid As GUID, _
-    ByVal pConnectionParameters As WLAN_CONNECTION_PARAMETERS, _
+    ByRef pInterfaceGuid As GUID, _
+    ByRef pConnectionParameters As WLAN_CONNECTION_PARAMETERS, _
     ByVal pReserved As Long _
     ) As Long
 
 Private Declare Function WlanDisconnect Lib "Wlanapi.dll" ( _
     ByVal hClientHandle As Long, _
-    ByVal pInterfaceGuid As GUID, _
+    ByRef pInterfaceGuid As GUID, _
     ByVal pReserved As Long _
     ) As Long
     
     
     
 
+Private Sub Form_Load()
+
+End Sub
