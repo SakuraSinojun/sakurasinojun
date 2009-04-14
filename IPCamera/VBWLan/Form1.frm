@@ -153,6 +153,7 @@ MsgBox "G U I D :    " & r_guid & vbCrLf & "…Ë±∏√Ë ˆ:    " & tmp
 
 
 
+
 End Sub
 
 
