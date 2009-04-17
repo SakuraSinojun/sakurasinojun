@@ -65,6 +65,7 @@ Private Declare Function WlanOpenHandle Lib "Wlanapi.dll" ( _
 Private Declare Function WlanEnumInterfaces Lib "Wlanapi.dll" (ByVal hClientHandle As Long, ByVal pReserved As Long, ByRef ppInterfaceList As Long) As Long
 
 'out       PWLAN_INTERFACE_INFO_LIST *ppInterfaceList
+
 Private Enum WLAN_CONNECTION_MODE
     wlan_connection_mode_profile
     wlan_connection_mode_temporary_profile
@@ -139,6 +140,3 @@ Private Declare Function WlanDisconnect Lib "Wlanapi.dll" ( _
     
     
 
-Private Sub Form_Load()
-
-End Sub
