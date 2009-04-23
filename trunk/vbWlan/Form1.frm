@@ -1,142 +1,111 @@
 VERSION 5.00
 Begin VB.Form Form1 
    Caption         =   "Form1"
-   ClientHeight    =   3120
+   ClientHeight    =   6795
    ClientLeft      =   60
-   ClientTop       =   420
-   ClientWidth     =   4680
+   ClientTop       =   450
+   ClientWidth     =   11040
    LinkTopic       =   "Form1"
-   ScaleHeight     =   3120
-   ScaleWidth      =   4680
+   ScaleHeight     =   6795
+   ScaleWidth      =   11040
    StartUpPosition =   3  '窗口缺省
+   Begin VB.TextBox Text1 
+      Height          =   4110
+      Left            =   1200
+      MultiLine       =   -1  'True
+      TabIndex        =   1
+      Top             =   405
+      Width           =   8295
+   End
+   Begin VB.CommandButton Command1 
+      Caption         =   "Command1"
+      Height          =   510
+      Left            =   1200
+      TabIndex        =   0
+      Top             =   4560
+      Width           =   3645
+   End
 End
 Attribute VB_Name = "Form1"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
+'Option Explicit
 
-Private Enum WLAN_INTERFACE_STATE
-    wlan_interface_state_not_ready = 0
-    wlan_interface_state_connected = 1
-    wlan_interface_state_ad_hoc_network_formed = 2
-    wlan_interface_state_disconnecting = 3
-    wlan_interface_state_disconnected = 4
-    wlan_interface_state_associating = 5
-    wlan_interface_state_discovering = 6
-    wlan_interface_state_authenticating = 7
-End Enum
-
-Private Type GUID
-    data1 As Long
-    data2(1) As Byte
-    data3(1) As Byte
-    data4(7) As Byte
-End Type
-'16 Bytes total
+Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (Destination As Any, Source As Any, ByVal Length As Long)
+Private Declare Function MultiByteToWideChar Lib "kernel32" (ByVal CodePage As Long, ByVal dwFlags As Long, ByVal lpMultiByteStr As String, ByVal cchMultiByte As Long, ByVal lpWideCharStr As String, ByVal cchWideChar As Long) As Long
+Private Declare Function WideCharToMultiByte Lib "kernel32" (ByVal CodePage As Long, ByVal dwFlags As Long, ByRef lpWideCharStr As Any, ByVal cchWideChar As Long, ByVal lpMultiByteStr As String, ByVal cchMultiByte As Long, ByVal lpDefaultChar As String, ByVal lpUsedDefaultChar As Long) As Long
 
 
-Private Type WLAN_INTERFACE_INFO
-    InterfaceGuid As GUID
-    strInterfaceDescription(511) As Byte
-    isState As WLAN_INTERFACE_STATE
-End Type
-' WLAN_INTERFACE_INFO, *PWLAN_INTERFACE_INFO;
-'16+512+4=532 bytes total
+
+Private Sub Command1_Click()
 
 
-Private Type WLAN_INTERFACE_INFO_LIST
-    dwNumberOfItems As Long
-    dwIndex As Long
-    InterfaceInfo(1) As WLAN_INTERFACE_INFO
-End Type
-'WLAN_INTERFACE_INFO_LIST, *PWLAN_INTERFACE_INFO_LIST;
-'4+4+532=540 bytes total
+Dim res As Long
+Dim dwNegotiatedVersion As Long
+Dim hClientHandle As Long
+
+pdwNegotiatedVersion = 0
+hClientHandle = 0
 
 
-Private Declare Function WlanOpenHandle Lib "Wlanapi.dll" ( _
-    ByVal dwClientVersion As Long, _
-    ByVal pReserved As Long, _
-    ByRef pdwNegotiatedVersion As Long, _
-    ByRef phClientHandle As Long _
-    ) As Long
-    
-    
-Private Declare Function WlanEnumInterfaces Lib "Wlanapi.dll" (ByVal hClientHandle As Long, ByVal pReserved As Long, ByRef ppInterfaceList As Long) As Long
+res = WlanOpenHandle(1, 0, dwNegotiatedVersion, hClientHandle)
 
-'out       PWLAN_INTERFACE_INFO_LIST *ppInterfaceList
+If (res <> 0) Then Exit Sub
+   
+ 
+'传递给WlanEnumInterfaces的应该是一个指针，这个指针在函数返回后指向的是函数分配的WLAN_INTERFACE_INFO_LIST结构的地址.
+Dim wiiListPtr As Long
+Dim wiiList As WLAN_INTERFACE_INFO_LIST
+wiiListPtr = 0
 
-Private Enum WLAN_CONNECTION_MODE
-    wlan_connection_mode_profile
-    wlan_connection_mode_temporary_profile
-    wlan_connection_mode_discovery_secure
-    wlan_connection_mode_discovery_unsecure
-    wlan_connection_mode_auto
-    wlan_connection_mode_invalid
-End Enum
+res = WlanEnumInterfaces(hClientHandle, 0, wiiListPtr)
+
+If (res <> 0) Then Exit Sub
+
+
+'将wiiListPtr指向的WLAN_INTERFACE_INFO_LIST结构复制出来。
+'只考虑一个网卡的情况。这样WLAN_INTERFACE_INFO_LIST结构共占4+4+532x1=540字节。
+'若多个网卡，应该先复制前4字节，以得到InterfaceInfo数量,然后ReDim InterfaceInfo数组，重新计算长度后再进行复制。
+'注意第二个参数应该按ByVal传递。
+CopyMemory wiiList, ByVal wiiListPtr, 540
+
+Dim r_guid As String
+Dim i As Integer
+
+With wiiList.InterfaceInfo(0).InterfaceGuid
+
+    r_guid = Hex(.data1) & "-" & Hex(.data2)
+    r_guid = r_guid & "-" & Hex(.data3)         '注意字节顺序
+    r_guid = r_guid & "-" & Hex(.data4(1)) & Hex(.data4(0))         '注意字节顺序
+    r_guid = r_guid & "-"
+    For i = 2 To 7
+        r_guid = r_guid & Hex(.data4(i))
+    Next i
+End With
 
 
 
 
-Private Type DOT11_SSID
-    uSSIDLength As Long
-    ucSSID(31) As Byte
-End Type
+'设备描述，以widechar形式存放于wiiList.InterfaceInfo(0).strInterfaceDescription()这个数组中.
+'此处在转换前不能用VB的string类型，因为string类型会将无法识别的字符全部转化成chr(0)。因此中文显示将出错。
+'注意WideCharToMultiByte的声明，第三个参数我已经修改为yRef lpWideCharStr As Any。而原参数形式是ByVal lpWideCharStr As String
+'这里需要的是字符串数组的首地址。
+Dim tmp As String
+Dim l As Integer
+l = WideCharToMultiByte(0, 0, wiiList.InterfaceInfo(0).strInterfaceDescription(0), -1, "", 0, "", 0)
+tmp = String(l + 1, " ")
+WideCharToMultiByte 0, 0, wiiList.InterfaceInfo(0).strInterfaceDescription(0), -1, tmp, l, vbNullString, 0
 
-
-Private Type NDIS_OBJECT_HEADER
-    Type As Byte
-    Revision As Byte
-    Size As Integer
-End Type
-
-
-
-Private Type DOT11_BSSID_LIST
-    Header As NDIS_OBJECT_HEADER
-    uNumOfEntries As Long
-    uTotalNumOfEntries As Long
-    BSSIDs(5) As Byte                   'DOT11_MAC_ADDRESS  BSSIDs[1];
-                                        'The DOT11_MAC_ADDRESS types are used to define an IEEE media access control (MAC) address.
-                                    
-                                        'typedef UCHAR DOT11_MAC_ADDRESS[6];
-                                    
-                                        'typedef DOT11_MAC_ADDRESS* PDOT11_MAC_ADDRESS;
-End Type
+Text1.Text = "G U I D :    " & r_guid & vbCrLf & "设备描述:    " & tmp & vbCrLf & wiiList.InterfaceInfo(0).isState
 
 
 
 
-Private Enum DOT11_BSS_TYPE
-        dot11_BSS_type_infrastructure = 1
-        dot11_BSS_type_independent = 2
-        dot11_BSS_type_any = 3
-End Enum
 
 
-Private Type WLAN_CONNECTION_PARAMETERS
-    wlanConnectionMode As WLAN_CONNECTION_MODE
-    strProfile As Long
-    pDot11Ssid As Long                      'pointer to DOT11_SSID
-    pDesiredBssidList As Long               'pointer to DOT11_BSSID_LIST
-    dot11BssType As DOT11_BSS_TYPE
-    dwFlags As Long
-End Type
-    
-         'WlanConnect
-Private Declare Function WlanConnect Lib "Wlanapi.dll" ( _
-    ByVal hClientHandle As Long, _
-    ByRef pInterfaceGuid As GUID, _
-    ByRef pConnectionParameters As WLAN_CONNECTION_PARAMETERS, _
-    ByVal pReserved As Long _
-    ) As Long
 
-Private Declare Function WlanDisconnect Lib "Wlanapi.dll" ( _
-    ByVal hClientHandle As Long, _
-    ByRef pInterfaceGuid As GUID, _
-    ByVal pReserved As Long _
-    ) As Long
-    
-    
-    
+End Sub
+
 

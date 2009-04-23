@@ -1,10 +1,13 @@
 Type=Exe
 Form=Form1.frm
 Reference=*\G{00020430-0000-0000-C000-000000000046}#2.0#0#C:\WINDOWS\system32\stdole2.tlb#OLE Automation
+Module=WlanFunc; WlanFunc.bas
+Module=WlanEnum; WlanEnum.bas
+Module=WlanType; WlanType.bas
 IconForm="Form1"
 Startup="Form1"
 Command32=""
-Name="¹¤³Ì1"
+Name="Wlan"
 HelpContextID="0"
 CompatibleMode="0"
 MajorVer=1
