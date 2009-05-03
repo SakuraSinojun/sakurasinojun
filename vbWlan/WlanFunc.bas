@@ -17,7 +17,18 @@ Public Declare Function WlanOpenHandle Lib "Wlanapi.dll" ( _
  ' __out         PHANDLE phClientHandle
 
 
-   
+Public Declare Function WlanCloseHandle Lib "Wlanapi.dll" ( _
+    ByVal hClientHandle As Long, _
+    ByVal pReserved As Long) As Long
+
+'DWORD WINAPI WlanCloseHandle(
+'  __in        HANDLE hClientHandle,
+'  __reserved  PVOID pReserved
+');
+
+Public Declare Sub WlanFreeMemory Lib "Wlanapi.dll" (ByRef pMemory As Any)
+
+
     
 Public Declare Function WlanEnumInterfaces Lib "Wlanapi.dll" ( _
     ByVal hClientHandle As Long, _
