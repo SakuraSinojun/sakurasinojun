@@ -24,8 +24,10 @@ CQuestion::CQuestion(wchar_t * file)
 	CString tmp;
 	CString cap;
 	CString Ans;
-	int i,j,l;
-
+	CString pnt;
+	
+	int i,j,k,l;
+	
 	path=CString(_T("Quest\\")) + CString(file);
 	CFile QFile;
 	if(QFile.Open (path,CFile::modeRead )==0) return;
@@ -42,17 +44,22 @@ CQuestion::CQuestion(wchar_t * file)
 	if(i==-1)return;
 	j=tmp.Find (_T("{Answer}"));
 	if(j==-1)return;
-
+	k=tmp.Find (_T("{Points}"));
+	if(k==-1)return;
+	
 	if(i<j)
 	{
 		cap=tmp.Mid(i+11,j-i-12);
-		Ans=tmp.Mid (j+8);
+		Ans=tmp.Mid (j+8,k-j-9);
+		pnt=tmp.Mid(k+8);
+		m_CorrectAnswer.ipnt= _wtoi(pnt);
 	}else{
 		Ans=tmp.Mid(i+11,j-i-12);
 		cap=tmp.Mid (j+8);
+
 	}
 	
-	
+
 
 	while((i=cap.Find (_T('\t')))>=0)
 	{
@@ -124,13 +131,14 @@ void CQuestion::SetAnswer (bool A,bool B,bool C,bool D)
 
 }
 
-bool CQuestion::Check() 
+int CQuestion::Check() 
 {
 	if(m_Answer.A==m_CorrectAnswer.A &&
 		m_Answer.B==m_CorrectAnswer.B && 
 		m_Answer.C==m_CorrectAnswer.C && 
 		m_Answer.D==m_CorrectAnswer.D)
-		return true;
-	return false;
+		return m_CorrectAnswer.ipnt;
+	else
+	return 0;
 
 }

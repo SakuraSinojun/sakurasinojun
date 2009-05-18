@@ -16,12 +16,13 @@ public:
 		bool B;
 		bool C;
 		bool D;
+		int ipnt;
 	};
 
 	Answer * GetAnswer();
 
 	void SetAnswer(bool A,bool B,bool C,bool D);
-	bool Check();
+	int Check();
 
 
 private:

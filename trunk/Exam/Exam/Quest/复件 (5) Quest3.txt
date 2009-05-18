@@ -1,5 +1,6 @@
 {Question}
 
+¶àÑ¡²âÊÔ
 5>?
 
 A.1
@@ -9,3 +10,5 @@ D.4
 
 {Answer}
 ABCD
+{Points}
+20

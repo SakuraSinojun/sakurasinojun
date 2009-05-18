@@ -31,3 +31,5 @@ D.	MemoryStream^ inStream = gcnew MemoryStream(document);
 	
 {Answer}
 C
+{Points}
+5
