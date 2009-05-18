@@ -10,3 +10,5 @@ D.4
 
 {Answer}
 ABCD
+{Points}
+20

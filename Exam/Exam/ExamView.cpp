@@ -119,6 +119,10 @@ void CExamView::OnDraw(CDC* pDC)
 
 		pDC->MoveTo (0,rcClient.bottom );
 		pDC->LineTo (rcClient.right +50,rcClient.bottom );
+		::wsprintf (temp,_T("%d/%d"),this->m_iQuestIndex+1, this->m_iQuestionCount);
+		pDC->TextOutW (rcClient.right ,rcClient.bottom ,temp,lstrlen(temp));
+
+
 
 	}
 
@@ -376,7 +380,7 @@ void CExamView::StartExam ()
 	this->m_EditQCount ->GetWindowTextW(temp,l+1);
 	::WideCharToMultiByte (CP_ACP,0,temp,-1,temp_ansi,l+1,0,false);
 	l=atoi(temp_ansi);
-
+	
 	delete temp;
 	delete temp_ansi;
 
@@ -385,7 +389,7 @@ void CExamView::StartExam ()
 		AfxMessageBox(_T("题目数不符!"));
 		return;
 	}
-	m_iChoosenCount=l;
+	m_iQuestionCount=l;
 	
 
 	this->m_ButtonStart->ShowWindow (SW_HIDE);
@@ -595,7 +599,7 @@ void CExamView::NextQuestion ()
 	memset(temp,0,(l+1)*sizeof(wchar_t));
 
 	m_cQuestList[m_iQuestIndex]->GetQuestion (temp);
-
+	//m_cQuestList[m_iQuestIndex]->m_CorrectAnswer.ipnt
 	memcpy(this->m_szQCont ,temp,(l+1)*sizeof(wchar_t));
 
 	delete temp;
@@ -741,7 +745,7 @@ void CExamView::CalcResult()
 {
 	int i;
 	int res;
-	
+	int ips;
 
 	char *temp_ansi=new char[100];
 
@@ -750,17 +754,19 @@ void CExamView::CalcResult()
 	if(i==7) return;
 
 	res=0;
+	ips=0;
 	for(i=0;i<this->m_iQuestionCount ;i++)
 	{
-		if(m_cQuestList[i]->Check ())
+		if(m_cQuestList[i]->Check ()!=0)
 		{
 			res++;
+			ips=ips+m_cQuestList[i]->Check();
 		}
 	}
 	
 	memset(temp_ansi,0,100);
 
-	sprintf (temp_ansi,("考试结束，所有题目共有 %d 个。其中，回答正确 %d 个，回答错误 %d 个。正确率 %f%% 。"),this->m_iQuestionCount ,res,m_iQuestionCount-res,100*((float)res)/((float)m_iQuestionCount));
+	sprintf (temp_ansi,("考试结束，所有题目共有 %d 个,得分 %d。其中，回答正确 %d 个，回答错误 %d 个。正确率 %f%% 。"),this->m_iQuestionCount ,ips,res,m_iQuestionCount-res,100*((float)res)/((float)m_iQuestionCount));
 	::MessageBoxA ((HWND)NULL,temp_ansi,"考试结束",MB_OK | MB_ICONINFORMATION);
 
 	delete temp_ansi;
