@@ -21,7 +21,7 @@ public:
 
 	Answer * GetAnswer();
 
-	void SetAnswer(bool A,bool B,bool C,bool D);
+	void SetAnswer(BOOL A,BOOL B,BOOL C,BOOL D);
 	int Check();
 
 
