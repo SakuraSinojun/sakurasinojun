@@ -40,6 +40,8 @@ BEGIN_MESSAGE_MAP(CExamView, CView)
 	//	ON_WM_LBUTTONUP()
 	//ON_WM_VSCROLL()
 	ON_WM_VSCROLL()
+	ON_WM_TIMER()
+	ON_WM_MOUSEWHEEL()
 END_MESSAGE_MAP()
 
 // CExamView 构造/析构
@@ -79,7 +81,7 @@ void CExamView::OnDraw(CDC* pDC)
 	// TODO: 在此处为本机数据添加绘制代码
 	
 	CRect rcClient;
-	
+
 	wchar_t * temp=new wchar_t[1024];
 	memset(temp,0,1024*sizeof(wchar_t));
 
@@ -94,6 +96,8 @@ void CExamView::OnDraw(CDC* pDC)
 		pDC->TextOutW (100,150,_T("请输入试题数量:"));
 		pDC->TextOutW (500,100,_T("登陆用户名"));
 		pDC->TextOutW (500,150,_T("学号"));
+		pDC->TextOutW (100,250,_T("考试用时"));
+		pDC->TextOutW (250,250,_T("分钟"));
 	}else if(m_ExamStatus==STATUS_STARTINGEXAM)
 	{
 		this->GetClientRect (rcClient);
@@ -121,8 +125,17 @@ void CExamView::OnDraw(CDC* pDC)
 		pDC->LineTo (rcClient.right +50,rcClient.bottom );
 		::wsprintf (temp,_T("%d/%d"),this->m_iQuestIndex+1, this->m_iQuestionCount);
 		pDC->TextOutW (rcClient.right ,rcClient.bottom ,temp,lstrlen(temp));
-
-
+		
+		
+		
+		
+		CRect rect;
+	
+		this ->GetClientRect (rect);
+	
+		pDC->TextOutW (100,rect.bottom -100,L"剩余时间",4);
+		::wsprintf(temp,_T("%d分%d秒"),(int)(this->m_LeftTime/60),this->m_LeftTime -60 * (int)(this->m_LeftTime /60));
+		pDC->TextOutW (100,rect.bottom-70,temp,lstrlen(temp));
 
 	}
 
@@ -166,6 +179,7 @@ void CExamView::OnInitialUpdate ()
 	CRect rcCheck;
 	CRect rcNext;
 	CRect rcScroll;
+	CRect rcTime;
 	//CRect rcEditQuest;
 
 	this->GetClientRect (rcClient);
@@ -187,6 +201,7 @@ void CExamView::OnInitialUpdate ()
 
 	rcName=CRect(600,99,750,120);
 	rcID=CRect(600,149,750,170);
+	rcTime=CRect(175,250,225,270);
 
 	rcCheck.left =100;
 	rcCheck.top =rcClient.bottom -170;
@@ -211,13 +226,14 @@ void CExamView::OnInitialUpdate ()
 	m_ButtonCalc=new CButton();
 	//m_EditQuest=new CEdit();
 	m_ScrollBar=new CScrollBar();
+	m_EditExamTime=new CNumEdit();
 
 	m_ButtonSetup->Create(_T("试题设置"),WS_VISIBLE | BS_PUSHBUTTON,rcSetup,this,IDC_BUTTONSETUPEXAM);
 	m_ButtonStart->Create(_T("开始考试"), BS_PUSHBUTTON,rcStart,this,IDC_BUTTONSTARTEXAM);
 	this->m_EditQCount ->Create(ES_CENTER | WS_EX_CLIENTEDGE | WS_CHILDWINDOW | WS_BORDER ,rcQCount,this,IDC_EDITQCOUNT);
 	this->m_EditName ->Create(ES_CENTER | WS_EX_CLIENTEDGE |WS_CHILDWINDOW|WS_BORDER,rcName,this,IDC_EDITNAME);
 	this->m_EditID ->Create(ES_CENTER | WS_EX_CLIENTEDGE |WS_CHILDWINDOW|WS_BORDER,rcID,this,IDC_EDITID);
-	
+	this->m_EditExamTime->Create(ES_CENTER | WS_EX_CLIENTEDGE | WS_CHILDWINDOW | WS_BORDER,rcTime,this,IDC_EDITEXAMTIME);
 	
 	this->m_CheckA ->Create(_T("选择答案A"),BS_AUTOCHECKBOX  | BS_PUSHLIKE ,rcCheck,this,IDC_CHECKA);
 	
@@ -250,6 +266,8 @@ void CExamView::OnInitialUpdate ()
 
 	this->m_ScrollBar ->Create(WS_VISIBLE| SBS_VERT ,rcScroll,this,IDC_SCROLLBAR);
 	this->m_ScrollBar ->SetScrollRange (0,600,true);
+
+	
 
 	//this->m_EditQuest ->Create (WS_VISIBLE |WS_BORDER |ES_LEFT|ES_MULTILINE |ES_READONLY|ES_AUTOVSCROLL |WS_EX_RIGHTSCROLLBAR,rcEditQuest,this,IDC_EDITQUEST);
 
@@ -396,6 +414,7 @@ void CExamView::StartExam ()
 	this->m_EditID ->ShowWindow (SW_HIDE);
 	this->m_EditName ->ShowWindow (SW_HIDE);
 	this->m_EditQCount ->ShowWindow (SW_HIDE);
+	this->m_EditExamTime ->ShowWindow (SW_HIDE);
 
 	m_ExamStatus=STATUS_STARTINGEXAM;
 
@@ -419,12 +438,14 @@ void CExamView::SetupExam ()
 
 	this->m_EditID ->SetWindowTextW (_T("1234567890123"));
 	this->m_EditName->SetWindowTextW(_T("NAME"));
+	this->m_EditExamTime ->SetWindowTextW (_T("30"));
 
 	this->m_ButtonSetup ->ShowWindow (SW_HIDE);
 	this->m_ButtonStart ->ShowWindow (SW_SHOW);
 	this->m_EditQCount ->ShowWindow (SW_SHOW);
 	this->m_EditName ->ShowWindow (SW_SHOW);
 	this->m_EditID ->ShowWindow (SW_SHOW);
+	this->m_EditExamTime ->ShowWindow (SW_SHOW);
 	this->m_ExamStatus =STATUS_SETUP;
 
 	this->Invalidate (true);
@@ -562,6 +583,16 @@ void CExamView::StartingExam ()
 	this->ShowWindow (SW_SHOW);
 
 
+	CString tmp;
+	int t;
+
+	this->m_EditExamTime ->GetWindowTextW(tmp);
+	t=_wtoi(tmp.GetBuffer(tmp.GetLength ()+1));
+	this->m_LeftTime =(DWORD)t*60;
+	this->SetTimer (1,1000,NULL);
+
+
+
 	this->m_ExamStatus =STATUS_EXAMING;
 
 	this->m_CheckA ->ShowWindow (SW_SHOW);
@@ -571,7 +602,7 @@ void CExamView::StartingExam ()
 	this->m_ButtonCalc ->ShowWindow (SW_SHOW);
 	this->m_ButtonNext ->ShowWindow (SW_SHOW);
 	this->m_ButtonPrev ->ShowWindow (SW_SHOW);
-
+	
 	this->Invalidate (true);
 
 	delete temp;
@@ -805,3 +836,87 @@ HFONT CExamView::ShowFont(HDC pDC, LPCWSTR fontstyle, int fontheight,int fontwei
 	HFONT hFont=::CreateFontIndirect(&lf); 
 	return hFont; 
 } 
+
+void CExamView::OnTimer(UINT_PTR nIDEvent)
+{
+	// TODO: 在此添加消息处理程序代码和/或调用默认值
+
+	CView::OnTimer(nIDEvent);
+	
+	int i;
+	int res;
+	int ips;
+	char *temp_ansi=new char[100];
+
+	if(nIDEvent==1)
+	{
+		this->m_LeftTime--;
+		if(m_LeftTime<=0)
+		{
+			res=0;
+			ips=0;
+			for(i=0;i<this->m_iQuestionCount ;i++)
+			{
+				if(m_cQuestList[i]->Check ()!=0)
+				{
+					res++;
+					ips=ips+m_cQuestList[i]->Check();
+				}
+			}
+			
+			memset(temp_ansi,0,100);
+
+			sprintf (temp_ansi,("考试结束，所有题目共有 %d 个,得分 %d。其中，回答正确 %d 个，回答错误 %d 个。正确率 %f%% 。"),this->m_iQuestionCount ,ips,res,m_iQuestionCount-res,100*((float)res)/((float)m_iQuestionCount));
+			::MessageBoxA ((HWND)NULL,temp_ansi,"考试结束",MB_OK | MB_ICONINFORMATION);
+			
+			m_LeftTime=0;
+
+			delete temp_ansi;
+			this->KillTimer (1);	
+		}
+	}
+	
+	CRect rect;
+	CRect rc;
+	this->GetClientRect (rc);
+
+	
+	rect.left =100;
+	rect.right =250;
+	rect.top =rc.bottom -100;
+	rect.bottom =rect.top +50;
+	
+	this->InvalidateRect(rect,TRUE);
+	//this->Invalidate ();
+}
+
+BOOL CExamView::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
+{
+	// TODO: 在此添加消息处理程序代码和/或调用默认值
+
+	SCROLLINFO si;
+    ZeroMemory(&si, sizeof(SCROLLINFO));
+    si.cbSize = sizeof(SCROLLINFO);
+    si.fMask  = SIF_ALL;
+
+	if (!m_ScrollBar->GetScrollInfo(&si, SIF_TRACKPOS))
+        return false;   
+	if(zDelta>0)
+	{
+		if(si.nTrackPos<=0)
+			return false;
+		m_ScrollBar->SetScrollPos(si.nTrackPos-10);
+		this->m_txtPosY =0-si.nTrackPos+10 ;
+		
+	}else{
+		if(si.nTrackPos>=600)
+			return false;
+		m_ScrollBar->SetScrollPos(si.nTrackPos+10);
+		this->m_txtPosY =0-si.nTrackPos -10;
+	}	
+
+	this->Invalidate (true);
+	//return CWnd::OnMouseWheel(nFlags, zDelta, pt);
+	return TRUE;
+	//Assert();
+}

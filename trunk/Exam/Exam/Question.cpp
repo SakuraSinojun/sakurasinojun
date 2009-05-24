@@ -122,7 +122,7 @@ CQuestion::Answer * CQuestion::GetAnswer()
 	return &m_Answer;
 }
 
-void CQuestion::SetAnswer (bool A,bool B,bool C,bool D)
+void CQuestion::SetAnswer (BOOL A,BOOL B,BOOL C,BOOL D)
 {
 	this->m_Answer .A =A;
 	this->m_Answer .B =B;

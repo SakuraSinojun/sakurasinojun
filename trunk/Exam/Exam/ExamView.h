@@ -23,7 +23,7 @@
 #define IDC_BUTTONCALC 212
 #define IDC_SCROLLBAR 213
 #define IDC_EDITQUEST 214
-
+#define IDC_EDITEXAMTIME 215
 
 class CExamView : public CView
 {
@@ -72,6 +72,7 @@ public:
 	CButton * m_ButtonCalc;
 
 	CNumEdit * m_EditQCount;
+	CNumEdit * m_EditExamTime;
 	CEdit * m_EditName;
 	CEdit * m_EditID;
 	CEdit * m_EditQuest;
@@ -85,6 +86,7 @@ public:
 	int m_txtPosY;
 	int m_iQuestIndex;
 
+	DWORD	m_LeftTime;
 
 	enum STATUS {STATUS_ZERO,STATUS_PREEXAM,STATUS_SETUP,STATUS_STARTINGEXAM,STATUS_EXAMING};
 	STATUS m_ExamStatus;
@@ -108,6 +110,8 @@ public:
 //	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 //	afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
+	afx_msg BOOL OnMouseWheel(UINT nFlags, short zDelta, CPoint pt);
 };
 
 #ifndef _DEBUG  // ExamView.cpp 中的调试版本
