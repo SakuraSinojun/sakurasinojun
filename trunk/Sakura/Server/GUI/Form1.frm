@@ -601,6 +601,14 @@ BroadCastInit = True
 
 End Function
 
+Private Sub Frame1_DragDrop(Source As Control, X As Single, Y As Single)
+
+End Sub
+
+Private Sub Label2_Click(Index As Integer)
+
+End Sub
+
 Private Sub mnConn_Click()
 
       wskControl.RemoteHost = m_Clients(m_cIndex).IP
@@ -1018,6 +1026,27 @@ Private Function AddClient(IP As String, HostName As String) As Boolean
             Exit Function
       End If
       
+      Dim pIniFile As New clsTIniFile
+    
+      Dim chn1 As Integer
+      Dim chn2 As Integer
+      Dim msg As String
+      
+      pIniFile.Initialize App.path & "\config.ini"
+      msg = pIniFile.ReadString("IPAddress", IP, "0.0")
+      msg = Trim(msg)
+      chn1 = Int(Val(msg))
+        
+        For i = 1 To Len(msg)
+            If (Mid(msg, i, 1) = ".") Then
+                Exit For
+            End If
+        Next i
+        msg = Trim(Mid(msg, i + 1))
+        chn2 = Int(Val(msg))
+        
+        
+      
       
       For i = 1 To MAXCLIENT
             If m_Clients(i).IP = "" Then
@@ -1025,6 +1054,8 @@ Private Function AddClient(IP As String, HostName As String) As Boolean
                   m_Clients(i).HostName = HostName
                   m_Clients(i).iTickPos = 0
                   m_Clients(i).bConnected = False
+                  m_Clients(i).CommToNet = chn1
+                  m_Clients(i).CommFromNet = chn2
                   RefreshClientInfo
                   AddClient = True
                   Exit Function
