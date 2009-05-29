@@ -1,2 +1,2 @@
-NetTest1???D:\svn\SakruaSinojun\trunk\Sakura\Release\1\NetTest.exe
-NetTest2???D:\svn\SakruaSinojun\trunk\Sakura\Release\2\NetTest.exe
+模拟发送???D:\svn\SakruaSinojun\trunk\Sakura\Release\演示\终端1\模拟发送.exe
+CommChart???D:\svn\SakruaSinojun\trunk\Sakura\Release\演示\终端2\CommChart.exe
