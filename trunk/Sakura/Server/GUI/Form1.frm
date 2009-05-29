@@ -5,7 +5,7 @@ Begin VB.Form Form1
    BackColor       =   &H00D67563&
    BorderStyle     =   1  'Fixed Single
    Caption         =   "Server/Client"
-   ClientHeight    =   8805
+   ClientHeight    =   8775
    ClientLeft      =   150
    ClientTop       =   540
    ClientWidth     =   13455
@@ -22,7 +22,7 @@ Begin VB.Form Form1
    LockControls    =   -1  'True
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   8805
+   ScaleHeight     =   8775
    ScaleWidth      =   13455
    StartUpPosition =   3  '窗口缺省
    Begin VB.PictureBox Picture4 
@@ -230,7 +230,7 @@ Begin VB.Form Form1
          Top             =   420
       End
       Begin MSWinsockLib.Winsock wskControl 
-         Left            =   4455
+         Left            =   4515
          Top             =   420
          _ExtentX        =   741
          _ExtentY        =   741
@@ -369,6 +369,7 @@ Private Declare Function lstrcpyL2S Lib "kernel32" Alias "lstrcpyA" (ByVal lpStr
 Private Declare Function lstrcpyS2L Lib "kernel32" Alias "lstrcpyA" (ByVal lpString1 As Long, ByVal lpString2 As String) As Long
 Private Declare Function lstrcpy Lib "kernel32" Alias "lstrcpyA" (ByVal lpString1 As String, ByVal lpString2 As String) As Long
 Private Declare Function lstrlen Lib "kernel32" Alias "lstrlenA" (ByVal lpString As String) As Long
+Private Declare Function lstrlenL Lib "kernel32" Alias "lstrlenA" (ByVal lpString As Long) As Long
 
 Private Const PAGE_NOACCESS = &H1
 Private Const PAGE_READONLY = &H2
@@ -405,6 +406,9 @@ Private Const m_MapFile = "{A2EE168A-E017-478d-9630-721F32B557B0}"
 
 Private Const MAXCLIENT = 18
 
+
+
+
 Private Type Client
       IP As String
       HostName As String
@@ -426,6 +430,9 @@ Private m_hMappingRFilePtr(MAXCLIENT) As Long
 
 Dim m_Clients(MAXCLIENT) As Client
 Dim m_cIndex As String
+Private Declare Sub ZeroMemory Lib "kernel32" Alias "RtlMoveMemory" (dest As Any, ByVal numBytes As Long)
+
+
 
 
 
@@ -446,12 +453,15 @@ Dim RMapHandle As Long
 Dim path As String
 
 
-
+    'For i = 1 To MAXCLIENT
+    '    m_Clients(i).CommFromNet(i) = 0
+    '    m_Clients(i).CommToNet(i) = 0
+    'Next i
+    
+    
       m_bIsSTesting = False
       
       
-
-
       With wskControl
             .Close
             .Protocol = sckUDPProtocol
@@ -600,14 +610,6 @@ m_bwskBroadCastInit = True
 BroadCastInit = True
 
 End Function
-
-Private Sub Frame1_DragDrop(Source As Control, X As Single, Y As Single)
-
-End Sub
-
-Private Sub Label2_Click(Index As Integer)
-
-End Sub
 
 Private Sub mnConn_Click()
 
@@ -779,6 +781,8 @@ End Sub
 Private Sub Timer2_Timer()
     
     Dim szCont As String * 1024
+    Dim bCont(1024) As Byte
+    
     Dim i As Integer
     Dim j As Integer
     
@@ -786,20 +790,27 @@ Private Sub Timer2_Timer()
       For i = 1 To MAXCLIENT
             szCont = String(1024, " ")
             lstrcpyL2S ByVal szCont, m_hMappingFilePtr(i)
+            CopyMemory ByVal VarPtr(bCont(0)), ByVal m_hMappingFilePtr(i), 1024
+            
             szCont = Trim(szCont)
             j = lstrlen(szCont)
             szCont = Left(szCont, j)
+            
+            j = lstrlenL(VarPtr(bCont(0)))
+            
             If j >= 1 Then
                   For j = 1 To MAXCLIENT
                         If m_Clients(j).IP <> "" Then
                               If m_Clients(j).CommToNet = i And m_Clients(j).bConnected = True Then
                                   wskXChange.RemoteHost = m_Clients(j).IP
                                   wskXChange.RemotePort = 7600
-                                  wskXChange.SendData szCont
+                                  wskXChange.SendData bCont
                               End If
                         End If
                   Next j
             lstrcpyS2L m_hMappingFilePtr(i), ""
+            'ZeroMemory ByVal m_hMappingFilePtr(i), ByVal 1024
+            
             End If
       Next i
 
@@ -901,6 +912,13 @@ Private Sub wskControl_DataArrival(ByVal bytesTotal As Long)
                         msg = "极差"
                   End If
                   DEBUG_SHOWMESSAGE ("客户端:" & wskControl.RemoteHostIP & "速度:" & Str(spd) & "毫秒 " & msg)
+                  
+                  
+                  
+                  
+                  
+                  'wskControl.SendData "GIVEMEATOKEN"
+                  
             End If
             
        ElseIf PACKET_TOKENREQUEST = cPacket.ControlWord Then
@@ -1088,23 +1106,55 @@ End Function
 
 Private Sub wskXChange_DataArrival(ByVal bytesTotal As Long)
       
-      Dim msg As String * 1024
+      'Dim msg As String * 1024
+      'Dim i As Integer
+      
+      'msg = String(1024, " ")
+      'wskXChange.GetData msg
+      
+      'i = CheckClient(wskXChange.RemoteHostIP)
+
+      'msg = Trim(Left(msg, lstrlen(msg) - 1))
+      
+      
+      'DEBUG_SHOWMESSAGE "收到来自" & wskXChange.RemoteHostIP & "的数据:" & vbCrLf & msg
+      
+      'If i = 0 Then Exit Sub
+      
+      'lstrcpyS2L m_hMappingRFilePtr(m_Clients(i).CommFromNet), ByVal msg
+      
+
+
+
+      Dim bCont() As Byte
+      Dim data(1025) As Byte
+      
       Dim i As Integer
+      Dim msg As String
       
-      msg = String(1024, " ")
-      wskXChange.GetData msg
+
+      wskXChange.GetData bCont()
+
       
+      For i = 0 To bytesTotal - 1
+            data(i) = bCont(i)
+      Next i
+      
+
       i = CheckClient(wskXChange.RemoteHostIP)
       
-      msg = Trim(Left(msg, lstrlen(msg) - 1))
-      
+      msg = String(1024, " ")
+      lstrcpyL2S msg, VarPtr(bCont(0))
+      msg = Left(msg, InStr(msg, Chr(0)) - 1)
       
       DEBUG_SHOWMESSAGE "收到来自" & wskXChange.RemoteHostIP & "的数据:" & vbCrLf & msg
       
       If i = 0 Then Exit Sub
       
-      lstrcpyS2L m_hMappingRFilePtr(m_Clients(i).CommFromNet), ByVal msg
+            
+      CopyMemory ByVal m_hMappingRFilePtr(m_Clients(i).CommFromNet), ByVal VarPtr(data(0)), 1024
       
+
 
 End Sub
 

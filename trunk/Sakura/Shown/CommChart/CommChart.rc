@@ -1,0 +1,348 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Chinese (中国) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
+#ifdef _WIN32
+LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
+#pragma code_page(936)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 4, 2\r\n"
+    "#pragma code_page(936)\r\n"
+    "#endif //_WIN32\r\n"
+    "#include ""res\\CommChart.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""l.chs\\afxres.rc""          // Standard components\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON    DISCARDABLE     "res\\CommChart.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUTBOX DIALOG DISCARDABLE  0, 0, 235, 55
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "关于 CommChart"
+FONT 9, "宋体"
+BEGIN
+    ICON            IDR_MAINFRAME,IDC_STATIC,11,17,20,20
+    LTEXT           "CommChart 1.0 版",IDC_STATIC,40,10,119,8,SS_NOPREFIX
+    LTEXT           "版权所有 (C) 2009",IDC_STATIC,40,25,119,8
+    DEFPUSHBUTTON   "确定",IDOK,178,7,50,14,WS_GROUP
+END
+
+IDD_COMMCHART_DIALOG DIALOGEX 0, 0, 512, 285
+STYLE WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_VISIBLE | WS_CAPTION | WS_SYSMENU | 
+    WS_THICKFRAME
+EXSTYLE WS_EX_APPWINDOW
+CAPTION "CommChart"
+FONT 9, "宋体"
+BEGIN
+    DEFPUSHBUTTON   "确定",IDOK,388,264,50,14,NOT WS_VISIBLE
+    PUSHBUTTON      "取消",IDCANCEL,455,264,50,14,NOT WS_VISIBLE
+    COMBOBOX        IDC_COMBO1,7,36,66,56,CBS_DROPDOWNLIST | CBS_SORT | 
+                    WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO2,7,71,66,122,CBS_DROPDOWNLIST | WS_VSCROLL | 
+                    WS_TABSTOP
+    COMBOBOX        IDC_COMBO3,7,109,66,76,CBS_DROPDOWNLIST | CBS_SORT | 
+                    WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO4,7,144,66,71,CBS_DROPDOWNLIST | CBS_SORT | 
+                    WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO5,7,183,66,52,CBS_DROPDOWNLIST | CBS_SORT | 
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "串口号",IDC_STATIC,7,23,28,9
+    LTEXT           "波特率",IDC_STATIC,7,58,62,9
+    LTEXT           "奇偶校验",IDC_STATIC,7,96,62,9
+    LTEXT           "数据位",IDC_STATIC,7,132,62,9
+    LTEXT           "停止位",IDC_STATIC,7,170,62,9
+    PUSHBUTTON      "打开串口",IDC_BUTTON2,7,209,68,32
+    CONTROL         "",IDC_MSCOMM1,"{648A5600-2C6E-101B-82B6-000000000014}",
+                    WS_TABSTOP,52,1,25,25
+    LTEXT           "Static",IDC_STATIC1,79,7,426,271,0,WS_EX_STATICEDGE
+    PUSHBUTTON      "读取记录",IDC_BUTTON3,7,246,68,32,WS_DISABLED
+END
+
+IDD_SETUP DIALOGEX 0, 0, 203, 126
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "设置"
+FONT 10, "System", 0, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "确定",IDOK,89,105,50,14
+    PUSHBUTTON      "取消",IDCANCEL,146,105,50,14
+    GROUPBOX        "图表尺寸",IDC_STATIC,7,7,189,56
+    LTEXT           "宽度:",IDC_STATIC,13,20,21,8
+    LTEXT           "高度:",IDC_STATIC,102,21,28,8
+    EDITTEXT        IDC_EDIT2,42,19,48,12,ES_CENTER | ES_NUMBER | NOT 
+                    WS_BORDER,WS_EX_STATICEDGE
+    EDITTEXT        IDC_EDIT3,134,20,48,12,ES_CENTER | ES_READONLY | 
+                    ES_NUMBER | NOT WS_BORDER,WS_EX_STATICEDGE
+    GROUPBOX        "数据长度",IDC_STATIC,7,67,189,38
+    CONTROL         "单字节(00~FF)",IDC_RADIO2,"Button",BS_AUTORADIOBUTTON,
+                    17,82,69,10
+    CONTROL         "双字节(0000~FFFF)",IDC_RADIO3,"Button",
+                    BS_AUTORADIOBUTTON | WS_DISABLED,108,83,75,10
+    LTEXT           "坐标切分::",IDC_STATIC,45,42,35,8
+    LTEXT           "秒",IDC_STATIC,137,43,18,8
+    EDITTEXT        IDC_EDIT4,83,41,48,12,ES_CENTER | ES_NUMBER | NOT 
+                    WS_BORDER,WS_EX_STATICEDGE
+END
+
+IDD_DLGREADDATA DIALOG DISCARDABLE  0, 0, 187, 45
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "对话"
+FONT 10, "System"
+BEGIN
+    DEFPUSHBUTTON   "确定",IDOK,7,24,84,14
+    PUSHBUTTON      "取消",IDCANCEL,96,24,84,14
+    LTEXT           "每条记录延时:",IDC_STATIC,14,8,56,12
+    EDITTEXT        IDC_EDIT1,76,7,50,12,ES_NUMBER
+    LTEXT           "毫秒",IDC_STATIC,132,8,38,10
+END
+
+
+#ifndef _MAC
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "080404B0"
+        BEGIN
+            VALUE "CompanyName", "\0"
+            VALUE "FileDescription", "CommChart Microsoft 基础类应用程序\0"
+            VALUE "FileVersion", "1, 0, 0, 1\0"
+            VALUE "InternalName", "CommChart\0"
+            VALUE "LegalCopyright", "版权所有 (C) 2009\0"
+            VALUE "LegalTrademarks", "\0"
+            VALUE "OriginalFilename", "CommChart.EXE\0"
+            VALUE "ProductName", "CommChart 应用程序\0"
+            VALUE "ProductVersion", "1, 0, 0, 1\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x804, 1200
+    END
+END
+
+#endif    // !_MAC
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 228
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 48
+    END
+
+    IDD_COMMCHART_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 505
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 278
+    END
+
+    IDD_SETUP, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 196
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 119
+    END
+
+    IDD_DLGREADDATA, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 180
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 38
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog Info
+//
+
+IDD_COMMCHART_DIALOG DLGINIT
+BEGIN
+    IDC_COMBO2, 0x403, 4, 0
+0x3131, 0x0030, 
+    IDC_COMBO2, 0x403, 4, 0
+0x3033, 0x0030, 
+    IDC_COMBO2, 0x403, 4, 0
+0x3036, 0x0030, 
+    IDC_COMBO2, 0x403, 5, 0
+0x3231, 0x3030, "\000" 
+    IDC_COMBO2, 0x403, 5, 0
+0x3432, 0x3030, "\000" 
+    IDC_COMBO2, 0x403, 5, 0
+0x3639, 0x3030, "\000" 
+    IDC_COMBO2, 0x403, 6, 0
+0x3431, 0x3034, 0x0030, 
+    IDC_COMBO2, 0x403, 6, 0
+0x3931, 0x3032, 0x0030, 
+    IDC_COMBO2, 0x403, 6, 0
+0x3832, 0x3038, 0x0030, 
+    IDC_COMBO2, 0x403, 6, 0
+0x3833, 0x3034, 0x0030, 
+    IDC_COMBO2, 0x403, 6, 0
+0x3635, 0x3030, 0x0030, 
+    IDC_COMBO2, 0x403, 7, 0
+0x3231, 0x3038, 0x3030, "\000" 
+    IDC_COMBO2, 0x403, 7, 0
+0x3532, 0x3036, 0x3030, "\000" 
+    IDC_COMBO3, 0x403, 14, 0
+0x2045, 0xc528, 0xcabc, 0x20fd, 0x7645, 0x6e65, 0x0029, 
+    IDC_COMBO3, 0x403, 14, 0
+0x204d, 0xb128, 0xbcea, 0x20c7, 0x614d, 0x6b72, 0x0029, 
+    IDC_COMBO3, 0x403, 17, 0
+0x204e, 0xc828, 0xcab1, 0x20a1, 0x6544, 0x6166, 0x6c75, 0x2974, "\000" 
+    IDC_COMBO3, 0x403, 13, 0
+0x204f, 0xc628, 0xcae6, 0x20fd, 0x644f, 0x2964, "\000" 
+    IDC_COMBO3, 0x403, 15, 0
+0x2053, 0xbf28, 0xb8d5, 0x20f1, 0x7053, 0x6361, 0x2965, "\000" 
+    IDC_COMBO4, 0x403, 2, 0
+0x0034, 
+    IDC_COMBO4, 0x403, 2, 0
+0x0035, 
+    IDC_COMBO4, 0x403, 2, 0
+0x0036, 
+    IDC_COMBO4, 0x403, 2, 0
+0x0037, 
+    IDC_COMBO4, 0x403, 2, 0
+0x0038, 
+    IDC_COMBO5, 0x403, 2, 0
+0x0031, 
+    IDC_COMBO5, 0x403, 4, 0
+0x2e31, 0x0035, 
+    IDC_COMBO5, 0x403, 2, 0
+0x0032, 
+    IDC_MSCOMM1, 0x376, 102, 0
+0x0013, 0x0000, 0x0043, 0x006f, 0x0070, 0x0079, 0x0072, 0x0069, 0x0067, 
+0x0068, 0x0074, 0x0020, 0x0028, 0x0063, 0x0029, 0x0020, 0x0031, 0x0039, 
+0x0039, 0x0034, 0x0020, 0x4321, 0x1234, 0x0008, 0x0000, 0x03ed, 0x0000, 
+0x03ed, 0x0000, 0x5601, 0x648a, 0x0000, 0x0006, 0x0000, 0x0001, 0x0400, 
+0x0000, 0x0200, 0x0000, 0x2580, 0x0000, 0x0000, 0x0008, 0x0000, 0x0000, 
+0x0000, 0x0000, 0x003f, 0x0000, 0x0001, 0x0000, 
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_ABOUTBOX            "关于 CommChart(&A)..."
+END
+
+#endif    // Chinese (中国) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
+#ifdef _WIN32
+LANGUAGE 4, 2
+#pragma code_page(936)
+#endif //_WIN32
+#include "res\CommChart.rc2"  // non-Microsoft Visual C++ edited resources
+#include "l.chs\afxres.rc"          // Standard components
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
