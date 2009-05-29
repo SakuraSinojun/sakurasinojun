@@ -1,5 +1,5 @@
 VERSION 5.00
-Object = "{EDE925E9-F18B-4316-8AB3-F5D6A6241846}#61.0#0"; "Channel.ocx"
+Object = "{EDE925E9-F18B-4316-8AB3-F5D6A6241846}#69.0#0"; "Channel.ocx"
 Begin VB.Form frmTest 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
@@ -14,8 +14,8 @@ Begin VB.Form frmTest
    ScaleWidth      =   11070
    StartUpPosition =   3  '窗口缺省
    Begin 工程2.Channel Channel1 
-      Left            =   5640
-      Top             =   1365
+      Left            =   6435
+      Top             =   1230
       _ExtentX        =   2275
       _ExtentY        =   1138
    End
@@ -56,15 +56,15 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
 
-Private Sub Channel1_DataArrival(data As String)
+Private Sub Channel1_DataArrivalS(data As String)
 
-      T (data)
+       T (data)
       
 End Sub
 
 Private Sub Command1_Click()
 
-Channel1.SendDataToChannel Text2.Text
+Channel1.SendDataToChannelS Text2.Text
 
 Text2.Text = ""
 

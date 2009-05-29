@@ -13,8 +13,8 @@ Begin VB.UserControl Channel
    Begin VB.Timer Timer1 
       Enabled         =   0   'False
       Interval        =   10
-      Left            =   1815
-      Top             =   375
+      Left            =   1725
+      Top             =   630
    End
 End
 Attribute VB_Name = "Channel"
@@ -72,8 +72,8 @@ Private Const FILE_MAP_WRITE = SECTION_MAP_WRITE
 
 
 '事件
-Event DataArrival(data As String)
-
+Event DataArrival(data As Long)
+Event DataArrivalS(data As String)
 
 
 
@@ -88,6 +88,16 @@ Private m_lRFilePtr As Long
 Private m_Channel As Integer
 Private m_RChannel As Integer
 
+Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (Destination As Any, Source As Any, ByVal length As Long)
+Private Declare Sub ZeroMemory Lib "kernel32" Alias "RtlZeroMemory" (ByVal dest As Long, ByVal numBytes As Long)
+
+Private Declare Function lstrlenL Lib "kernel32" Alias "lstrlenA" (ByVal lpString As Long) As Long
+
+
+
+
+
+
 
 '读取当前程序所用通道
 '通道号存于App.Path 下的"channel.conf"文件中
@@ -97,7 +107,7 @@ Private Function ReadChannel() As Integer
 Dim msg As String
 Dim pIniFile As New clsTIniFile
 
-pIniFile.Initialize "channel.config"
+pIniFile.Initialize App.path & "\channel.config"
 
 msg = pIniFile.ReadString("CHANNEL", "SendChannel", "0")
 
@@ -112,12 +122,25 @@ End Function
 
 
 
-Public Function SendDataToChannel(data As String) As Long
+Public Function SendDataToChannel(ByVal data As Long, ByVal length As Long) As Long
+
+'lstrcpyS2L m_lFilePtr, ByVal data
+      
+      Dim l As Long
+      
+      l = length
+      
+      CopyMemory ByVal m_lFilePtr, ByVal VarPtr(l), 4
+      CopyMemory ByVal (m_lFilePtr + 4), ByVal data, ByVal length
+
+End Function
+
+
+Public Function SendDataToChannelS(data As String) As Long
 
 lstrcpyS2L m_lFilePtr, ByVal data
 
 End Function
-
 
 
 
@@ -128,23 +151,36 @@ Dim i As Integer
 Dim szCont As String * 1024
 szCont = String(1024, " ")
 
-lstrcpyL2S ByVal szCont, m_lRFilePtr
+Dim bCont(1024) As Byte
+ZeroMemory ByVal VarPtr(bCont(0)), ByVal 1024
 
+
+CopyMemory bCont(0), m_lRFilePtr, 1024
+
+lstrcpyL2S ByVal szCont, m_lRFilePtr
 szCont = Trim(szCont)
 
 i = lstrlen(szCont)
 
 If i >= 1 Then
-    RaiseEvent DataArrival(Trim(Left(szCont, i - 1)))
+    RaiseEvent DataArrivalS(Trim(Left(szCont, i - 1)))
+    'lstrcpyS2L m_lRFilePtr, ""
 End If
 
-lstrcpyS2L m_lRFilePtr, ""
+If lstrlenL(ByVal VarPtr(bCont(0))) > 0 Then
+    RaiseEvent DataArrival(VarPtr(bCont(0)))
+    'lstrcpyS2L m_lRFilePtr, ""
+End If
+
+
 
 End Sub
 
 
-
-
+Public Sub ClearR()
+      ZeroMemory m_lRFilePtr, 1024
+      
+End Sub
 
 Private Sub UserControl_Initialize()
 
@@ -168,7 +204,7 @@ ReadChannel
 
 '初始化共享文件
       '发送信道
-      If m_Channel = 0 Then Exit Sub
+      If m_Channel = 0 Then GoTo inti2
       path = m_MapFile & "S" & Trim(Str(m_Channel))
       m_MapHandle = OpenFileMapping(FILE_MAP_ALL_ACCESS, PAGE_READWRITE, path)
       If m_MapHandle = 0 Then
@@ -180,9 +216,11 @@ ReadChannel
       m_lFilePtr = MapViewOfFile(m_MapHandle, FILE_MAP_ALL_ACCESS, 0, 0, 0)
       'CloseHandle m_MapHandle
       
+inti2:
+
       '接收信道
       If m_RChannel = 0 Then Exit Sub
-      path = m_MapFile & "R" & Trim(Str(m_Channel))
+      path = m_MapFile & "R" & Trim(Str(m_RChannel))
       m_RMapHandle = OpenFileMapping(FILE_MAP_ALL_ACCESS, PAGE_READWRITE, path)
       If m_RMapHandle = 0 Then
           m_RMapHandle = CreateFileMapping(&HFFFFFFFF, Security, PAGE_READWRITE, 0, 1024, path)
