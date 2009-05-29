@@ -30,6 +30,10 @@ Attribute VB_Exposed = False
 Option Explicit
 Dim FileName(100) As String
 
+Private Sub Command1_Click(Index As Integer)
+Shell FileName(Index), vbNormalFocus
+End Sub
+
 Private Sub Form_Load()
 
 If Dir(App.Path & "\AppList.txt") = "" Then
