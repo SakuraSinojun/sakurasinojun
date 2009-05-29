@@ -458,6 +458,8 @@ Private Sub BSocket_DataArrival(ByVal bytesTotal As Long)
         Exit Sub
     End If
     
+    If Len(msg) = Len("SETUPRUNNING") Then Exit Sub
+    
     If m_client.QueryClientIndex(IPAddress) = 0 Then
         msg = Mid(msg, Len("SETUPRUNNING") + 1)
             
@@ -625,10 +627,6 @@ Private Sub mnRegisterExe_Click()
     
 End Sub
 
-Private Sub picStatusBar_Click()
-
-End Sub
-
 Private Sub Timer1_Timer()
     
     Dim msg As String
@@ -652,6 +650,11 @@ Private Sub TimerRefresher_Timer()
     If m_bIsClientsChanged Then
         RefreshClient
     End If
+
+    
+    Exit Sub
+    
+    '
 
     FindFirstFile App.path & "\NetConfig.txt", fd
     If TimeCmp(fd.ftLastWriteTime, oTime) <> 0 Then
@@ -938,6 +941,14 @@ Public Sub UpdateLocalExe()
     
     fp = FreeFile
     
+    If Dir(App.path & "\AppList.txt") = "" Then
+    
+        Open App.path & "\AppList.txt" For Output As #fp
+        Close fp
+        Exit Sub
+        
+    End If
+    
     Open App.path & "\AppList.txt" For Input As #fp
     
     While Not EOF(fp)
@@ -991,6 +1002,7 @@ Private Sub ReadNetworkConfig()
     Dim msg As String
     
     Dim data As DATASTREAMLIST
+    Dim data1 As DATASTREAMLIST
     
     fp = FreeFile
     
@@ -1010,11 +1022,16 @@ Private Sub ReadNetworkConfig()
         
         lstrcpyS2L VarPtr(data.IPAddress(0)), ip2
         lstrcpyS2L VarPtr(data.ExeName), exe2
+          
+        lstrcpyS2L VarPtr(data1.IPAddress(0)), ip1
+        lstrcpyS2L VarPtr(data1.ExeName), exe1
         
         If df Then
             m_client.AddClientEx ip1, exe1, VarPtr(data), 0
+            m_client.AddClientEx ip2, exe2, 0, VarPtr(data1)
         Else
             m_client.AddClientEx ip1, exe1, 0, VarPtr(data)
+            m_client.AddClientEx ip2, exe2, VarPtr(data1), 0
         End If
     
     Wend
@@ -1023,6 +1040,8 @@ Private Sub ReadNetworkConfig()
     Form1.RefreshClient
     
     CopyFile App.path & "config.tmp", App.path & "NetConfig.txt", 0
+    
+    InitLocalExeConfig
     
 End Sub
 
@@ -1052,6 +1071,17 @@ Private Sub InitLocalExeConfig()
     
     
     fp = FreeFile
+    
+    
+      If Dir(App.path & "\NetConfig.txt") = "" Then
+      
+            Open App.path & "\NetConfig.txt" For Output As #fp
+            Close fp
+            
+            Exit Sub
+            
+      End If
+      
     Open App.path & "\NetConfig.txt" For Input As #fp
     
     While Not EOF(fp)
@@ -1270,6 +1300,9 @@ End Function
 
 
 Private Function GetIP1(data As String) As String
+    
+    If data = "" Then Exit Function
+
     Dim i As Integer
     Dim msg As String
     i = InStr(data, "->")
