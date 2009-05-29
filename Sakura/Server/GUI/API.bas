@@ -53,7 +53,7 @@ Public Declare Function RegQueryValueEx Lib "advapi32.dll" Alias "RegQueryValueE
 
 
 
-Private Declare Function WriteSharedComm Lib "ShareDLL.dll" (ByVal CommPort As Integer, ByVal data As String, ByVal length As Integer) As Integer
+Private Declare Function WriteSharedComm Lib "ShareDLL.dll" (ByVal CommPort As Integer, ByVal data As String, ByVal Length As Integer) As Integer
 Private Declare Function ReadSharedComm Lib "ShareDLL.dll" (ByVal CommPort As Integer, ByVal data As String) As Integer
 
 
@@ -78,5 +78,8 @@ Private Declare Function ReadSharedComm Lib "ShareDLL.dll" (ByVal CommPort As In
 
 
 
+
+
+Public Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (Destination As Any, Source As Any, ByVal Length As Long)
 
 
