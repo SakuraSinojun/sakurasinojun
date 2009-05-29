@@ -228,9 +228,10 @@ void CExamView::OnInitialUpdate ()
 	m_ScrollBar=new CScrollBar();
 	m_EditExamTime=new CNumEdit();
 
+
 	m_ButtonSetup->Create(_T("试题设置"),WS_VISIBLE | BS_PUSHBUTTON,rcSetup,this,IDC_BUTTONSETUPEXAM);
 	m_ButtonStart->Create(_T("开始考试"), BS_PUSHBUTTON,rcStart,this,IDC_BUTTONSTARTEXAM);
-	this->m_EditQCount ->Create(ES_CENTER | WS_EX_CLIENTEDGE | WS_CHILDWINDOW | WS_BORDER ,rcQCount,this,IDC_EDITQCOUNT);
+	this->m_EditQCount ->Create(ES_CENTER |  WS_CHILDWINDOW | WS_BORDER ,rcQCount,this,IDC_EDITQCOUNT);
 	this->m_EditName ->Create(ES_CENTER | WS_EX_CLIENTEDGE |WS_CHILDWINDOW|WS_BORDER,rcName,this,IDC_EDITNAME);
 	this->m_EditID ->Create(ES_CENTER | WS_EX_CLIENTEDGE |WS_CHILDWINDOW|WS_BORDER,rcID,this,IDC_EDITID);
 	this->m_EditExamTime->Create(ES_CENTER | WS_EX_CLIENTEDGE | WS_CHILDWINDOW | WS_BORDER,rcTime,this,IDC_EDITEXAMTIME);
