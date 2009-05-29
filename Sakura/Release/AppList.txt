@@ -1,2 +1,0 @@
-NetTest1???D:\svn\SakruaSinojun\trunk\Sakura\Release\1\NetTest.exe
-NetTest2???D:\svn\SakruaSinojun\trunk\Sakura\Release\2\NetTest.exe
