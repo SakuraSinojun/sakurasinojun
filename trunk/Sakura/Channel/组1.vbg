@@ -1,0 +1,4 @@
+VBGROUP 5.0
+Project=Channel.vbp
+Project=NetTest.vbp
+StartupProject=..\Shown\模拟发送\工程1.vbp
