@@ -1,0 +1,9 @@
+Server???E:\Visual Studio 2008\Saku\Sakura\Release\Server.exe
+模拟发送???D:\svn\SakruaSinojun\trunk\Sakura\Main\Module11.bas
+CommChart???D:\svn\SakruaSinojun\trunk\Sakura\Release\演示\终端2\CommChart.exe
+模拟发送???D:\svn\SakruaSinojun\trunk\Sakura\Release\演示\终端1\模拟发送.exe
+CommChart???D:\svn\SakruaSinojun\trunk\Sakura\Release\演示\终端2\CommChart.exe
+模拟发送???D:\svn\SakruaSinojun\trunk\Sakura\Release\演示\终端1\模拟发送.exe
+CommChart???D:\svn\SakruaSinojun\trunk\Sakura\Release\演示\终端2\CommChart.exe
+模拟发送???D:\svn\SakruaSinojun\trunk\Sakura\Release\演示\终端1\模拟发送.exe
+CommChart???D:\svn\SakruaSinojun\trunk\Sakura\Release\演示\终端2\CommChart.exe
