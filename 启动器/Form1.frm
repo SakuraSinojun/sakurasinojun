@@ -1,13 +1,15 @@
 VERSION 5.00
 Begin VB.Form Form1 
    BackColor       =   &H80000007&
+   BorderStyle     =   1  'Fixed Single
    Caption         =   " Æô¶¯Æ÷"
-   ClientHeight    =   3120
-   ClientLeft      =   60
-   ClientTop       =   420
+   ClientHeight    =   480
+   ClientLeft      =   45
+   ClientTop       =   405
    ClientWidth     =   2835
    LinkTopic       =   "Form1"
-   ScaleHeight     =   3120
+   MaxButton       =   0   'False
+   ScaleHeight     =   480
    ScaleWidth      =   2835
    StartUpPosition =   3  '´°¿ÚÈ±Ê¡
    Begin VB.CommandButton Command1 
@@ -61,13 +63,18 @@ While (Not EOF(1))
         Command1(i).Height = Command1(i).Height
         Command1(i).Width = Command1(i).Width
         Command1(i).Visible = True
-        Form1.Height = Command1(i).Height * i + 20
+        
     End If
     Command1(i).Caption = tmp(0)
     If Dir(FileName(i)) = "" Then Command1(i).Enabled = False
     i = i + 1
 Wend
 
+
+
     Close #1
+
+i = i - 1
+Form1.Height = Form1.Height + Command1(i).Height * i
 
 End Sub
