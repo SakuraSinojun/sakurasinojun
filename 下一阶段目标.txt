@@ -1,0 +1,6 @@
+
+整理出一个用Mapped File实现进程间流通信的协议。
+确究一下Named Pipe.
+
+
+
