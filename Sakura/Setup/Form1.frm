@@ -14,6 +14,14 @@ Begin VB.Form Form1
    ScaleHeight     =   7905
    ScaleWidth      =   10665
    StartUpPosition =   2  '屏幕中心
+   Begin MSWinsockLib.Winsock Winsock1 
+      Left            =   2520
+      Top             =   4440
+      _ExtentX        =   741
+      _ExtentY        =   741
+      _Version        =   393216
+      Protocol        =   1
+   End
    Begin VB.PictureBox picStatusBar 
       Align           =   2  'Align Bottom
       AutoRedraw      =   -1  'True
@@ -185,6 +193,7 @@ Begin VB.Form Form1
    Begin VB.Menu mnFile 
       Caption         =   "文件(&F)"
       Enabled         =   0   'False
+      Visible         =   0   'False
       Begin VB.Menu mnNew 
          Caption         =   "新建(&N)"
       End
@@ -242,7 +251,7 @@ Dim oTime As FILETIME
 
 
 
-
+Private m_QuitToken As Integer
 
 
 
@@ -443,6 +452,8 @@ Private Sub BSocket_DataArrival(ByVal bytesTotal As Long)
     Dim df As Boolean
         
     Dim data As DATASTREAMLIST
+    Dim data1 As DATASTREAMLIST
+    
     
     msg = String(bytesTotal, " ")
     
@@ -464,20 +475,29 @@ Private Sub BSocket_DataArrival(ByVal bytesTotal As Long)
         msg = Mid(msg, Len("SETUPRUNNING") + 1)
             
         ip1 = GetIP1(msg)
-        ip2 = GetIP2(msg)
         exe1 = GetExe1(msg)
+        
+        ip2 = GetIP2(msg)
         exe2 = GetExe2(msg)
         df = StreamIsLeftToRight(msg)
+
         
         
         lstrcpyS2L VarPtr(data.IPAddress(0)), ip2
         lstrcpyS2L VarPtr(data.ExeName), exe2
-        
+        lstrcpyS2L VarPtr(data1.IPAddress(0)), ip1
+        lstrcpyS2L VarPtr(data1.ExeName), exe1
+            
+        m_client.AddClient ip1, exe1
+        m_client.AddClient ip2, exe2
         If df Then
-            m_client.AddClientEx ip1, exe1, VarPtr(data), 0
+            'm_client.AddClientEx ip2, exe2, 0, VarPtr(data1)
+            'm_client.AddClientEx ip1, exe1, VarPtr(data), 0
         Else
-            m_client.AddClientEx ip1, exe1, 0, VarPtr(data)
+            'm_client.AddClientEx ip2, exe2, VarPtr(data1), 0
+            'm_client.AddClientEx ip1, exe1, 0, VarPtr(data)
         End If
+        
     End If
 
 End Sub
@@ -545,7 +565,12 @@ Private Sub CSocket_DataArrival(ByVal bytesTotal As Long)
 
     Dim msg As String
     Dim fp As Integer
-
+    Dim ip1 As String, ip2 As String
+    Dim exe1 As String, exe2 As String
+    Dim df As Boolean
+    Dim data As DATASTREAMLIST
+    Dim data1 As DATASTREAMLIST
+    
     
     CSocket.GetData msg
     
@@ -567,6 +592,28 @@ Private Sub CSocket_DataArrival(ByVal bytesTotal As Long)
         Open App.path & "\config.tmp" For Append As fp
         Print #fp, msg
         Close fp
+        
+        
+        ip1 = GetIP1(msg)
+        ip2 = GetIP2(msg)
+        exe1 = GetExe1(msg)
+        exe2 = GetExe2(msg)
+        df = StreamIsLeftToRight(msg)
+        
+        lstrcpyS2L VarPtr(data.IPAddress(0)), ip2
+        lstrcpyS2L VarPtr(data.ExeName), exe2
+          
+        lstrcpyS2L VarPtr(data1.IPAddress(0)), ip1
+        lstrcpyS2L VarPtr(data1.ExeName), exe1
+        
+        If df Then
+            'm_client.AddClientEx ip1, exe1, VarPtr(data), 0
+            'm_client.AddClientEx ip2, exe2, 0, VarPtr(data1)
+        Else
+            'm_client.AddClientEx ip1, exe1, 0, VarPtr(data)
+            'm_client.AddClientEx ip2, exe2, VarPtr(data1), 0
+        End If
+        
         
     End If
     
@@ -603,9 +650,19 @@ Private Sub Form_Load()
         .Bind
     End With
     
+    With Winsock1
+        .Close
+        .Protocol = sckUDPProtocol
+        .LocalPort = 7445
+        .Bind
+    End With
+    m_QuitToken = 0
+    
+    
     oTime.dwHighDateTime = 0
     oTime.dwLowDateTime = 0
     m_iLocalIndex = 1
+    
     InitLocalExeConfig
     
     m_bIsClientsChanged = False
@@ -617,6 +674,29 @@ Private Sub Form_Load()
     
     UpdateLocalExe
     
+    Me.Show
+    
+    If Command = "HIDE" Then
+        Me.Hide
+    ElseIf Command = "DEBUG" Then
+        Me.Show
+    Else
+        Me.Hide
+        MsgBox "请从VVMain.exe执行配置程序", vbInformation
+        End
+    End If
+    
+    
+End Sub
+
+Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
+
+    If Command = "DEBUG" Then Exit Sub
+    
+    If m_QuitToken = 0 Then
+        Cancel = 1
+        Me.Hide
+    End If
     
 End Sub
 
@@ -973,6 +1053,7 @@ Public Sub ConfigNetwork()
     fp = FreeFile
     Open App.path & "\NetConfig.txt" For Input As #fp
     
+    CSocket.RemoteHost = "255.255.255.255"
     CSocket.SendData "STARTCONFIG"
     
     DoEvents
@@ -981,6 +1062,7 @@ Public Sub ConfigNetwork()
         Line Input #fp, msg
         msg = Trim(msg)
         If msg <> "" Then
+            CSocket.RemoteHost = "255.255.255.255"
             CSocket.SendData msg
         End If
         DoEvents
@@ -988,7 +1070,12 @@ Public Sub ConfigNetwork()
     
     Close fp
     
+    DoEvents
+    
+    CSocket.RemoteHost = "255.255.255.255"
     CSocket.SendData "ENDCONFIG"
+    DoEvents
+    
     
 End Sub
 
@@ -1046,7 +1133,7 @@ Private Sub ReadNetworkConfig()
 End Sub
 
 
-Private Sub InitLocalExeConfig()
+Public Sub InitLocalExeConfig()
     '
     Dim msg As String
     Dim ip1 As String, ip2 As String
@@ -1059,15 +1146,14 @@ Private Sub InitLocalExeConfig()
     Dim lexeIndex As Integer
     lexeIndex = 1
     
-    
     Dim temp As String
     Dim CurrentLineIndex As Integer
     Dim t As Integer
-    
+    Dim j As Integer, i As Integer
     
     CurrentLineIndex = 1
     
-    'm_Channel.InitChannelManager
+    m_Channel.InitChannelManager
     
     
     fp = FreeFile
@@ -1108,13 +1194,24 @@ Private Sub InitLocalExeConfig()
     
     Close fp
     
+    fp = FreeFile
+    Open App.path & "\AppList.txt" For Input As #fp
     
+    While Not EOF(fp)
+        Line Input #fp, msg
+        msg = Trim(msg)
+        msg = Left(msg, InStr(msg, "???") - 1)
+        m_LocalExes(CurrentLineIndex) = CSocket.LocalIP & "->" & msg
+        CurrentLineIndex = CurrentLineIndex + 1
+    Wend
+    
+    Close fp
     
     
     m_LocalExes(CurrentLineIndex) = ""
 
     Dim localExes(128) As String
-    Dim j As Integer, i As Integer
+
     
     For i = 1 To 128
         localExes(i) = lexeList(i)
@@ -1199,6 +1296,9 @@ Private Sub ConfigExe(cmd As String)
     
     Dim i As Integer
     
+    Dim ChnData As SETCHANNEL
+    Dim ChnByte(19) As Byte
+    
     ip1 = GetIP1(cmd)
     ip2 = GetIP2(cmd)
     exe1 = GetExe1(cmd)
@@ -1231,6 +1331,17 @@ Private Sub ConfigExe(cmd As String)
             End If
             msg = Trim(Str(chn1)) & "." & Trim(Str(chn2))
             tIniFile.WriteString "IPAddress", ip2, msg
+            
+            lstrcpyS2L VarPtr(ChnData.IPAddress(0)), ip2
+            ChnData.SendChannel = chn1
+            ChnData.RecvChannel = chn2
+            ChnData.Command = CMD_SETCHANNEL
+            Winsock1.RemoteHost = "127.0.0.1"
+            Winsock1.RemotePort = 7444
+            ZeroMemory ByVal VarPtr(ChnByte(0)), 20
+            CopyMemory ByVal VarPtr(ChnByte(0)), ByVal VarPtr(ChnData), LenB(ChnData)
+            Winsock1.SendData ChnByte
+        
         End If
     End If
     
@@ -1306,8 +1417,14 @@ Private Function GetIP1(data As String) As String
     Dim i As Integer
     Dim msg As String
     i = InStr(data, "->")
-    msg = Trim(Left(data, i - 1))
+    If i > 0 Then
+        msg = Trim(Left(data, i - 1))
+    Else
+        msg = data
+    End If
+    
     GetIP1 = msg
+    
 End Function
 Private Function GetIP2(data As String) As String
     Dim i As Integer
@@ -1318,9 +1435,19 @@ Private Function GetIP2(data As String) As String
     i = InStr(i + 1, data, "->")
     j = InStr(data, "==>")
     t = InStr(data, "<==")
-    If j <= 0 Then j = t
+    If j <= 0 Then
+        If t > 0 Then
+            j = t
+        Else
+            j = 0
+        End If
+    End If
     
-    msg = Trim(Mid(data, j + 3, i - j - 3))
+    If j > 0 Then
+        msg = Trim(Mid(data, j + 3, i - j - 3))
+    Else
+        msg = ""
+    End If
     GetIP2 = msg
 End Function
 Private Function GetExe1(data As String) As String
@@ -1329,6 +1456,7 @@ Private Function GetExe1(data As String) As String
     i = InStr(data, "->")
     j = InStr(data, "==>")
     If j <= 0 Then j = InStr(data, "<==")
+    If j <= 0 Then j = Len(data) + 1
     GetExe1 = Mid(data, i + 2, j - i - 2)
 End Function
 Private Function GetExe2(data As String) As String
@@ -1336,7 +1464,12 @@ Private Function GetExe2(data As String) As String
 
     i = InStr(data, "->")
     i = InStr(i + 1, data, "->")
-    GetExe2 = Trim(Mid(data, i + 2))
+        
+    If i > 0 Then
+        GetExe2 = Trim(Mid(data, i + 2))
+    Else
+        GetExe2 = ""
+    End If
     
 End Function
 
@@ -1381,6 +1514,39 @@ Private Function TimeCmp(time1 As FILETIME, time2 As FILETIME) As Integer
 End Function
 
 
+Private Sub Winsock1_DataArrival(ByVal bytesTotal As Long)
+    
+On Error GoTo whr
+
+    Dim cmd() As Byte
+    Winsock1.GetData cmd
+        
+    Select Case cmd(0)
+        Case CMD_SHOWWINDOW
+            Me.Show
+        Case CMD_EXIT
+            m_QuitToken = 1
+            'Unload Me
+            End
+    End Select
+    
+    Exit Sub
+whr:
+    Err.Clear
+
+End Sub
+
+Public Sub SendChangeMessage()
+      
+      Dim cmd As Byte
+      cmd = CMD_REFRESHLOCALFILE
+      Winsock1.RemoteHost = "127.0.0.1"
+      Winsock1.RemotePort = 7446
+      Winsock1.SendData cmd
+      DoEvents
+      End
+      
+End Sub
 
 
 
