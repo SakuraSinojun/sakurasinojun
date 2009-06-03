@@ -1,7 +1,7 @@
 VERSION 5.00
 Object = "{648A5603-2C6E-101B-82B6-000000000014}#1.1#0"; "MSCOMM32.OCX"
 Object = "{F9043C88-F6F2-101A-A3C9-08002B2F49FB}#1.2#0"; "Comdlg32.ocx"
-Object = "{EDE925E9-F18B-4316-8AB3-F5D6A6241846}#70.0#0"; "Channel.ocx"
+Object = "{EDE925E9-F18B-4316-8AB3-F5D6A6241846}#73.0#0"; "Channel.ocx"
 Begin VB.Form Form1 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
@@ -144,7 +144,7 @@ Begin VB.Form Form1
          Height          =   300
          ItemData        =   "Form1.frx":0130
          Left            =   150
-         List            =   "Form1.frx":0140
+         List            =   "Form1.frx":014C
          Style           =   2  'Dropdown List
          TabIndex        =   43
          Top             =   240
@@ -648,9 +648,9 @@ Begin VB.Form Form1
       Begin VB.ComboBox Combo1 
          Appearance      =   0  'Flat
          Height          =   300
-         ItemData        =   "Form1.frx":015C
+         ItemData        =   "Form1.frx":0180
          Left            =   150
-         List            =   "Form1.frx":016C
+         List            =   "Form1.frx":019C
          Style           =   2  'Dropdown List
          TabIndex        =   5
          Top             =   240

@@ -26,15 +26,24 @@ CChannel::CChannel()
 	CString schn;
 	CString rchn;
 	SECURITY_ATTRIBUTES Security;
-	
+	CString sAppPath;
+
 	m_hWndCallBack=NULL;	
 	
 	
 	char* tmpPath=new char[MAX_PATH+5];
 	memset(tmpPath,0,MAX_PATH+5);
-	::GetCurrentDirectory (MAX_PATH,tmpPath);
+	//::GetCurrentDirectory (MAX_PATH,tmpPath);
 	
-	lstrcat(tmpPath,"\\channel.config");
+	::GetModuleFileName(NULL,tmpPath,MAX_PATH);
+	sAppPath=CString(tmpPath);
+	sAppPath=sAppPath.Left(sAppPath.ReverseFind('\\'));   
+	sAppPath=sAppPath+"\\";
+	
+	memset(tmpPath,0,MAX_PATH+5);
+	lstrcpy(tmpPath,sAppPath.GetBuffer (sAppPath.GetLength ()+1));
+
+	lstrcat(tmpPath,"channel.config");
 	CIniFile * pIniFile=new CIniFile(tmpPath);
 	
 	schn=pIniFile->ReadString ("CHANNEL","SendChannel","0");
