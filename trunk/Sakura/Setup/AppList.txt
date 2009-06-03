@@ -1,2 +1,2 @@
-模拟发送???D:\svn\SakruaSinojun\trunk\Sakura\Release\演示\终端1\模拟发送.exe
-CommChart???D:\svn\SakruaSinojun\trunk\Sakura\Release\演示\终端2\CommChart.exe
+CommChart???D:\svn\SakruaSinojun\trunk\Sakura\Release\最终发布\示例程序\模拟接收\CommChart.exe
+模拟发送???D:\svn\SakruaSinojun\trunk\Sakura\Release\最终发布\示例程序\模拟发送\模拟发送.exe

@@ -116,6 +116,7 @@ On Error GoTo whr
     
     Text1.Visible = True
     CommonDialog1.CancelError = True
+    CommonDialog1.Filter = "ø…÷¥––≥Ã–Ú|*.exe"
     CommonDialog1.ShowOpen
     
     path = CommonDialog1.FileName
@@ -152,7 +153,13 @@ Private Sub Command2_Click()
     'InitLocalExeConfig
     
     Form1.m_client.Initialize
+    
+    
     Form1.UpdateLocalExe
+    'Form1.InitLocalExeConfig
+    
+    
+    Form1.SendChangeMessage
     
     Unload Me
     
@@ -273,6 +280,8 @@ End Sub
 
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
 
+
+  
     Form1.Enabled = True
     
 End Sub
