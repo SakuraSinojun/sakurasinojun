@@ -1,0 +1,19 @@
+
+
+
+
+
+Server/Client:	7444
+Setup:			7445
+Main:			7446
+
+
+
+						COMMAND
+Server	Setup	Main		
+   o	  o				CMD_SHOWWINDOW
+   o					CMD_SETCHANNEL		IPADDRESS(16)	SCHN(FF,00~18)	RCHN(FF,00~18)
+   o	  o				CMD_EXIT
+   o					CMD_CONNECT			IPADDRESS(16)
+				 o		CMD_REFRESHLOCALFILE
+
