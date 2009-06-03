@@ -198,9 +198,16 @@ Begin VB.Form Form1
       TabIndex        =   0
       Top             =   60
       Width           =   13410
+      Begin MSWinsockLib.Winsock Winsock1 
+         Left            =   5250
+         Top             =   420
+         _ExtentX        =   741
+         _ExtentY        =   741
+         _Version        =   393216
+      End
       Begin VB.Timer Timer2 
          Interval        =   10
-         Left            =   7890
+         Left            =   7455
          Top             =   420
       End
       Begin VB.PictureBox Picture3 
@@ -221,7 +228,7 @@ Begin VB.Form Form1
       End
       Begin VB.Timer Timer1 
          Interval        =   3000
-         Left            =   7065
+         Left            =   7050
          Top             =   420
       End
       Begin VB.Timer TimerTimeOut 
@@ -230,14 +237,14 @@ Begin VB.Form Form1
          Top             =   420
       End
       Begin MSWinsockLib.Winsock wskControl 
-         Left            =   4515
+         Left            =   4440
          Top             =   420
          _ExtentX        =   741
          _ExtentY        =   741
          _Version        =   393216
       End
       Begin MSWinsockLib.Winsock wskXChange 
-         Left            =   5295
+         Left            =   4845
          Top             =   420
          _ExtentX        =   741
          _ExtentY        =   741
@@ -433,6 +440,7 @@ Dim m_cIndex As String
 Private Declare Sub ZeroMemory Lib "kernel32" Alias "RtlMoveMemory" (dest As Any, ByVal numBytes As Long)
 
 
+Private m_QuitToken As Integer
 
 
 
@@ -457,7 +465,11 @@ Dim path As String
     '    m_Clients(i).CommFromNet(i) = 0
     '    m_Clients(i).CommToNet(i) = 0
     'Next i
-    
+     
+     
+     
+     Me.Show
+     Me.Width = 9450
     
       m_bIsSTesting = False
       
@@ -472,12 +484,20 @@ Dim path As String
       End With
       
       With wskXChange
-        .Close
-        .Protocol = sckUDPProtocol
-        .LocalPort = 7600
-        .Bind
+            .Close
+            .Protocol = sckUDPProtocol
+            .LocalPort = 7600
+            .Bind
       End With
       
+      With Winsock1
+            .Close
+            .Protocol = sckUDPProtocol
+            .LocalPort = 7444
+            .Bind
+      End With
+      
+      m_QuitToken = 0
       
       pnlTop.Left = 0
       pnlTop.Top = 0
@@ -583,17 +603,27 @@ Dim path As String
             
         Next i
 
-        Me.Show
-        Me.Width = 9450
+       
         
+      If Command = "HIDE" Then
+            Me.Hide
+            'Me.Visible = False
+      End If
 
 End Sub
 
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
 
-wskBroadCast.Close
-wskControl.Close
 
+      If m_QuitToken = 0 Then
+            Cancel = 1
+            'Me.WindowState = vbMinimized
+            Me.Hide
+      Else
+            wskBroadCast.Close
+            wskControl.Close
+      End If
+      
 
 End Sub
 
@@ -765,6 +795,7 @@ Private Sub Picture4_Click()
             Me.Width = 9450
       Else
             Me.Width = 13545
+            pnlTop.Width = Me.Width
       End If
       
 End Sub
@@ -830,6 +861,46 @@ Private Sub TimerTimeOut_Timer()
       Next i
       
       RefreshClientInfo
+      
+End Sub
+
+Private Sub Winsock1_DataArrival(ByVal bytesTotal As Long)
+
+
+On Error GoTo whr
+
+      Dim cmd() As Byte
+      Dim i As Integer
+      Dim data As SETCHANNEL
+      Dim IPAddress As String
+      
+      Winsock1.GetData cmd
+      
+      Select Case cmd(0)
+            Case CMD_SHOWWINDOW
+                  Me.Show
+            Case CMD_EXIT
+                  m_QuitToken = 1
+                  Unload Me
+            Case CMD_SETCHANNEL
+                  CopyMemory data, cmd(0), bytesTotal
+                  IPAddress = String(16, " ")
+                  lstrcpyL2S IPAddress, VarPtr(data.IPAddress(0))
+                  IPAddress = Trim(IPAddress)
+                  IPAddress = Left(IPAddress, InStr(IPAddress, Chr(0)) - 1)
+                  i = CheckClient(IPAddress)
+                  If data.SendChannel <> &HFF Then
+                        m_Clients(i).CommToNet = data.SendChannel
+                  End If
+                  If data.RecvChannel <> &HFF Then
+                        m_Clients(i).CommFromNet = data.RecvChannel
+                  End If
+            Case Else
+      End Select
+      
+      Exit Sub
+whr:
+      Err.Clear
       
 End Sub
 
@@ -1074,6 +1145,7 @@ Private Function AddClient(IP As String, HostName As String) As Boolean
                   m_Clients(i).bConnected = False
                   m_Clients(i).CommToNet = chn1
                   m_Clients(i).CommFromNet = chn2
+                  m_Clients(i).bConnected = True
                   RefreshClientInfo
                   AddClient = True
                   Exit Function
