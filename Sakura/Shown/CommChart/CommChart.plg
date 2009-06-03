@@ -6,13 +6,13 @@
 --------------------Configuration: CommChart - Win32 Debug--------------------
 </h3>
 <h3>Command Lines</h3>
-Creating temporary file "C:\DOCUME~1\Ó£Áè×¼\LOCALS~1\Temp\RSP114.tmp" with contents
+Creating temporary file "C:\DOCUME~1\Ó£Áè×¼\LOCALS~1\Temp\RSP3D5.tmp" with contents
 [
 /nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /FR"Debug/" /Fp"Debug/CommChart.pch" /Yu"stdafx.h" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
 "D:\svn\SakruaSinojun\trunk\Sakura\Shown\CommChart\Channel.cpp"
 ]
-Creating command line "cl.exe @"C:\DOCUME~1\Ó£Áè×¼\LOCALS~1\Temp\RSP114.tmp"" 
-Creating temporary file "C:\DOCUME~1\Ó£Áè×¼\LOCALS~1\Temp\RSP115.tmp" with contents
+Creating command line "cl.exe @"C:\DOCUME~1\Ó£Áè×¼\LOCALS~1\Temp\RSP3D5.tmp"" 
+Creating temporary file "C:\DOCUME~1\Ó£Áè×¼\LOCALS~1\Temp\RSP3D6.tmp" with contents
 [
 /nologo /subsystem:windows /incremental:yes /pdb:"Debug/CommChart.pdb" /debug /machine:I386 /out:"Debug/CommChart.exe" /pdbtype:sept 
 .\Debug\Chart.obj
@@ -22,11 +22,11 @@ Creating temporary file "C:\DOCUME~1\Ó£Áè×¼\LOCALS~1\Temp\RSP115.tmp" with conte
 .\Debug\mscomm.obj
 .\Debug\SetupDlg.obj
 .\Debug\StdAfx.obj
-.\Debug\CommChart.res
 .\Debug\Channel.obj
 .\Debug\IniFile.obj
+.\Debug\CommChart.res
 ]
-Creating command line "link.exe @"C:\DOCUME~1\Ó£Áè×¼\LOCALS~1\Temp\RSP115.tmp""
+Creating command line "link.exe @"C:\DOCUME~1\Ó£Áè×¼\LOCALS~1\Temp\RSP3D6.tmp""
 <h3>Output Window</h3>
 Compiling...
 Channel.cpp

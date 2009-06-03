@@ -107,13 +107,10 @@ END_MESSAGE_MAP()
 BOOL CCommChartDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
-
 	// Add "About..." menu item to system menu.
-
 	// IDM_ABOUTBOX must be in the system command range.
 	ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
 	ASSERT(IDM_ABOUTBOX < 0xF000);
-
 	CMenu* pSysMenu = GetSystemMenu(FALSE);
 	if (pSysMenu != NULL)
 	{
@@ -125,17 +122,11 @@ BOOL CCommChartDlg::OnInitDialog()
 			pSysMenu->AppendMenu(MF_STRING, IDM_ABOUTBOX, strAboutMenu);
 		}
 	}
-
 	// Set the icon for this dialog.  The framework does this automatically
 	//  when the application's main window is not a dialog
 	SetIcon(m_hIcon, TRUE);			// Set big icon
 	SetIcon(m_hIcon, FALSE);		// Set small icon
-	
 	// TODO: Add extra initialization here
-	
-
-
-
 
 	//¿Ø¼þ³õÊ¼»¯
 	m_Combo1.ResetContent ();
@@ -160,8 +151,6 @@ BOOL CCommChartDlg::OnInitDialog()
 	this->ShowWindow (SW_MAXIMIZE);
 
 	//::RegisterHotKey (this->GetSafeHwnd (),1001,1,VK_RETURN);
-
-
 
 	/*
 	
@@ -195,19 +184,11 @@ BOOL CCommChartDlg::OnInitDialog()
 		AfxMessageBox(e->ErrorMessage());
 	}      
 
-
 	*/
 
-	
-	
 	m_channel=new CChannel();
-
 	m_channel->SetCallBackHwnd(this->GetSafeHwnd ());
-
 	m_channel->run();
-
-	
-
 
 
 

@@ -13,12 +13,12 @@ Class2=CCommChartDlg
 Class3=CAboutDlg
 
 ResourceCount=5
-Resource1=IDD_ABOUTBOX
+Resource1=IDD_SETUP
 Resource2=IDR_MAINFRAME
 Class4=CChart
-Resource3=IDD_COMMCHART_DIALOG
+Resource3=IDD_ABOUTBOX
 Class5=CSetupDlg
-Resource4=IDD_SETUP
+Resource4=IDD_COMMCHART_DIALOG
 Class6=CDlgReadData
 Resource5=IDD_DLGREADDATA
 
